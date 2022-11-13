@@ -150,11 +150,18 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result.text = "On"
 
 		TYPE_INT:
-			result = SpinBox.new()
+			result = EditorSpinSlider.new()
 			result.value = initial_value
+			result.min_value = -INF
+			result.max_value = INF
 
 		TYPE_REAL:
-			result = FloatPropertyEditor.new(initial_value, float_step)
+			result = EditorSpinSlider.new()
+			result.value = initial_value
+			result.min_value = -INF
+			result.max_value = INF
+			result.step = float_step
+			result.hide_slider = true
 
 		TYPE_STRING:
 			result = LineEdit.new()
@@ -180,8 +187,8 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 		TYPE_OBJECT, TYPE_NIL:
 			# Sometimes Objects can be Nil, so type is guessed incorrectly
-			result = ObjectPropertyEditor.new()
-			result.value = initial_value
+			result = EditorResourcePicker.new()
+			result.edited_resource = initial_value
 
 		TYPE_DICTIONARY:
 			result = get_script().new()
@@ -211,8 +218,10 @@ func connect_control(control, type, key, is_key):
 	if control is ColorPickerButton:
 		signal_name = "color_changed"
 
-	elif control is BaseButton && !control is ObjectPropertyEditor:
-		# ObjectPropertyEditor's is "value_changed", but it's still a button!
+	elif control is EditorResourcePicker:
+		signal_name = "resource_changed"
+
+	elif control is BaseButton:
 		signal_name = "toggled"
 		
 	elif control is LineEdit:

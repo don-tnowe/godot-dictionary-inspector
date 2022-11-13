@@ -62,10 +62,10 @@ dict2 = {
 "Even supports non-string keys!": Color( 0.8, 0.0823529, 0.0823529, 1 ),
 "Some number.": 0.78,
 "Some vector...": Vector3( 0.16, 0, 0 ),
-AABB( 0.71, 0.47, 0.67, 1.34, 0.6, 2.31 ): [ "nested array!", ExtResource( 2 ), 0 ],
-AABB( 0, 0, 0, 0, 0, 0 ): {
+AABB( 0, 0, 7.74, 0, 0, 0 ): {
 "Whole nested dict???": true
-}
+},
+AABB( 0.71, 0.47, 0.67, 1.34, 0.6, 16.5 ): [ "nested array!", ExtResource( 2 ), 11.0 ]
 }
 dict3 = {
 }
