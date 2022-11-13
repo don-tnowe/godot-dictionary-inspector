@@ -1,16 +1,18 @@
-[gd_resource type="Resource" load_steps=6 format=2]
+[gd_resource type="Resource" load_steps=8 format=2]
 
 [ext_resource path="res://average_dictionary_enjoyer.gd" type="Script" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://default_env.tres" type="Environment" id=3]
 
 [sub_resource type="Resource" id=4]
 script = ExtResource( 1 )
 dict1 = {
 }
 dict2 = {
-"cool_property": 9
+"some_array": 0.0,
+"some_color": 0.25
 }
 dict3 = {
-"boring_property": Color( 0.745098, 0.745098, 0.745098, 1 )
 }
 
 [sub_resource type="Resource" id=3]
@@ -52,12 +54,18 @@ res = SubResource( 2 )
 [resource]
 script = ExtResource( 1 )
 dict1 = {
+true: [ "nested, dynamic!", 200.0 ],
+"key": Color( 0.117647, 1, 0.52549, 1 ),
+Vector2( 0.13, 0 ): ExtResource( 3 )
 }
 dict2 = {
-"Enter value...22": 0.0,
-"Enter value...222": Vector2( 0, 0 ),
-"Enter value...9": 0.0,
-"Enter value...ss": 0.0
+"Even supports non-string keys!": Color( 0.8, 0.0823529, 0.0823529, 1 ),
+"Some number.": 0.78,
+"Some vector...": Vector3( 0.16, 0, 0 ),
+AABB( 0.71, 0.47, 0.67, 1.34, 0.6, 2.31 ): [ "nested array!", ExtResource( 2 ), 0 ],
+AABB( 0, 0, 0, 0, 0, 0 ): {
+"Whole nested dict???": true
+}
 }
 dict3 = {
 }
