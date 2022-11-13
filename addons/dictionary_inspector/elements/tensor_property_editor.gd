@@ -62,14 +62,14 @@ func add_field_with_label(component_id, value):
 
 
 func _on_field_edited(value, component_id):
-  if value is Transform:
+  if self.value is Transform:
     if component_id <= ComponentId.Z:
       self.value.origin = get_with_component_changed(self.value.origin, value, component_id)
     
     else:
       self.value.basis = get_with_component_changed(self.value.basis, value, component_id)
 
-  elif value is Transform2D:
+  elif self.value is Transform2D:
     if component_id <= ComponentId.Z:
       self.value.origin = get_with_component_changed(self.value.origin, value, component_id)
 
