@@ -7,11 +7,15 @@ var header_node
 
 
 func can_drop_data(position, data):
-	return true
+	return data.has("files")
 
 
 func drop_data(position, data):
-	print(data)
+	last_type_v = TYPE_OBJECT
+	for x in data["files"]:
+		_on_add_button_pressed()
+		update_variant(dict.size() - 1, load(x), false)
+		get_child(get_child_count() - 2).get_child(3).value = load(x)
 
 
 func create_header():
@@ -59,6 +63,9 @@ func update_header():
 
 func _on_add_button_pressed():
 	var new_value = default_per_class[last_type_v]
+	if dict.size() > 0 && (last_type_v == TYPE_OBJECT || dict[-1] is Object):
+		new_value = dict[-1].duplicate()
+
 	dict.append(new_value)
 	update_variant(dict.size() - 1, new_value, false)
 	update_header()

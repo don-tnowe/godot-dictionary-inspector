@@ -39,6 +39,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/dictionary_inspector/elements/float_property_editor.gd"
 }, {
+"base": "Button",
+"class": "ObjectPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/object_property_editor.gd"
+}, {
 "base": "ArrayPropertyEditor",
 "class": "PackedArrayPropertyEditor",
 "language": "GDScript",
@@ -66,6 +71,7 @@ _global_script_class_icons={
 "DictionaryInspectorPlugin": "",
 "DictionaryInspectorProperty": "",
 "FloatPropertyEditor": "",
+"ObjectPropertyEditor": "",
 "PackedArrayPropertyEditor": "",
 "TensorPropertyEditor": "",
 "ThemeIconButton": "",

@@ -4,6 +4,7 @@ extends MarginContainer
 
 signal value_changed(new_value)
 
+var clicked := false
 var dragged := false
 var edited := false
 var cur_value := 0.0
@@ -47,9 +48,8 @@ func _input(event):
 		if !get_global_rect().has_point(event.position):
 			return
 			
-		if Input.is_mouse_button_pressed(BUTTON_LEFT) && abs(event.position.x - click_start.x) > 6:
+		if clicked && abs(event.position.x - click_start.x) > 6:
 			dragged = true
-		
 		
 	if event is InputEventMouseButton:
 		if !event.button_index == BUTTON_LEFT:
@@ -61,6 +61,8 @@ func _input(event):
 
 			edited = false
 			dragged = false
+			
+		clicked = false
 
 
 func _gui_input(event):
@@ -68,10 +70,8 @@ func _gui_input(event):
 		if !event.button_index == BUTTON_LEFT:
 			return
 		
-		# Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if event.pressed:
-			# Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			dragged = true
+			clicked = true
 			click_start = event.position
 
 		elif !dragged:

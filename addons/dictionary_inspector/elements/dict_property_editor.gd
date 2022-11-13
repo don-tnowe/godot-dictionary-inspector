@@ -148,10 +148,6 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 	var settings = plugin.get_editor_interface().get_editor_settings()
 	var float_step = settings.get_setting("interface/inspector/default_float_step")
 	match(type):
-		TYPE_NIL:
-			result = Label.new()
-			result.text = "[null]"
-
 		TYPE_BOOL:
 			result = CheckBox.new()
 			result.text = "On"
@@ -185,9 +181,10 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result = Label.new()
 			result.text = "[not supported yet]"
 
-		TYPE_OBJECT:
-			result = Label.new()
-			result.text = "[not supported yet]"
+		TYPE_OBJECT, TYPE_NIL:
+			# Sometimes Objects can be Nil, so type is guessed incorrectly
+			result = ObjectPropertyEditor.new()
+			result.value = initial_value
 
 		TYPE_DICTIONARY:
 			result = get_script().new()
@@ -213,7 +210,8 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 func connect_control(control, type, key, is_key):
 	var signal_name := "value_changed"
-	if control is BaseButton:
+	if control is BaseButton && !control is ObjectPropertyEditor:
+		# ObjectPropertyEditor's is "value_changed", but it's still a button!
 		signal_name = "toggled"
 		
 	elif control is LineEdit:
