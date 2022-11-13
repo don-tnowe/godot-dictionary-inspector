@@ -30,7 +30,6 @@ func create_property_container(k):
 	c.get_child(1).text = str(k)
 	c.get_child(1).rect_min_size.x = 24
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
-	c.add_child(create_delete_button(k))
 	c.add_child(create_color_rect())
 
 	return c

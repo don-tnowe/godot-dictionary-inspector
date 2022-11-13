@@ -62,7 +62,6 @@ func create_property_container(k):
 	c.get_child(1).rect_min_size.x = 24
 	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
-	c.add_child(create_delete_button(k))
 	c.add_child(create_color_rect())
 
 	return c
@@ -92,6 +91,10 @@ func _on_add_button_pressed():
 
 
 func _on_property_control_type_changed(type, control, key, is_key = false):
+	if type == 0:
+		_on_property_deleted(key, control)
+		return
+	
 	var value = default_per_class[type]
 	var new_editor = create_property_control_for_type(type, value, key, is_key)
 	control.get_parent().get_child(control.get_position_in_parent() + 1).free()

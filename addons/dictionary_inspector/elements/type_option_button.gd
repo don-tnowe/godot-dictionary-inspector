@@ -3,7 +3,7 @@ extends OptionButton
 
 
 const typenames = [
-	"Nil",
+	"Remove",
 	"bool",
 	"int",
 	"float",
@@ -45,11 +45,13 @@ func _ready():
 			add_icon_item(custom_icons[i], typenames[i])
 	
 	text = ""
+	set_item_text(0, "DELETE ENTRY")
 	connect("item_selected", self, "_on_item_selected")
 
 
 func add_type_icon_item(name):
 	add_icon_item(get_icon(name, "EditorIcons"), name)
+	get_popup().set_item_as_radio_checkable(get_item_count() - 1, false)
 
 
 func _on_item_selected(index):

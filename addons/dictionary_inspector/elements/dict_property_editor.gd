@@ -128,24 +128,15 @@ func create_property_container(k):
 	c.add_child(create_property_control_for_type(typeof(k), k, k, true))
 	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
-	c.add_child(create_delete_button(k))
 	c.add_child(create_color_rect())
 
 	return c
 
 
-func create_delete_button(key):
-	var result = Button.new()
-	result.text = ""
-	result.icon = get_icon("Remove", "EditorIcons")
-	result.connect("pressed", self, "_on_property_deleted", [key, result])
-	return result
-
-
 func create_type_switcher(type, key, is_key) -> TypeOptionButton:
 	var result = TypeOptionButton.new()
 	result.call_deferred("_on_item_selected", type)
-	result.connect("item_selected", self, "_on_property_control_type_changed", [result, key, is_key])
+	result.get_popup().connect("index_pressed", self, "_on_property_control_type_changed", [result, key, is_key])
 	return result
 
 
@@ -296,6 +287,10 @@ func _on_property_control_value_changed(value, control, key, is_rename = false):
 
 
 func _on_property_control_type_changed(type, control, key, is_key = false):
+	if type == 0:
+		_on_property_deleted(key, control)
+		return
+
 	var value = default_per_class[type]
 	var new_editor = create_property_control_for_type(type, value, value if is_key else key, is_key)
 	control.get_parent().get_child(control.get_position_in_parent() + 1).free()
