@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "DictPropertyEditor",
+"class": "ArrayPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/array_property_editor.gd"
+}, {
 "base": "Resource",
 "class": "AverageDictionaryEnjoyer",
 "language": "GDScript",
@@ -50,6 +55,7 @@ _global_script_classes=[ {
 "path": "res://addons/dictionary_inspector/elements/type_option_button.gd"
 } ]
 _global_script_class_icons={
+"ArrayPropertyEditor": "",
 "AverageDictionaryEnjoyer": "",
 "DictPropertyEditor": "",
 "DictionaryInspectorPlugin": "",

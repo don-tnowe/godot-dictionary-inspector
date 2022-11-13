@@ -48,18 +48,19 @@ func display(dict, plugin : EditorPlugin):
 	self.dict = dict
 	settings = plugin.get_editor_interface().get_editor_settings()
 	recursion_color = get_recursion_color()
-	add_child(MarginContainer.new())
-	get_child(0).add_child(create_color_rect())
-	get_child(0).add_child(create_add_button())
-	get_child(0).rect_min_size.y = get_child(0).get_child(1).get_minimum_size().y + 4
+	add_child(create_header())
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
 	init_prop_container = HBoxContainer.new()
 	init_prop_container.size_flags_horizontal = SIZE_EXPAND_FILL
 	init_prop_container.add_constant_override("separation", 0)
 
-	for k in dict.keys():
+	for k in dict.keys() if dict is Dictionary else dict.size():
+		# YES, the Array editor is just the Dictionary editor but without keys.
+		# That's why this check is necessary.
 		add_child(create_property_container(k))
+		last_type_k = typeof(k)
+		last_type_v = typeof(dict[k])
 	
 	add_child(create_color_rect())
 	rect_min_size.x = 0
@@ -87,10 +88,19 @@ func get_recursion_color():
 	return color
 
 
+func create_header():
+	var result = MarginContainer.new()
+	result.add_child(create_color_rect())
+	result.add_child(create_add_button())
+	# result.rect_min_size.y = get_child(0).get_child(1).get_minimum_size().y + 4
+	return result
+
+
 func create_color_rect() -> ColorRect:
 	var color_rect = ColorRect.new()
 	color_rect.rect_min_size = Vector2(2, 2)
 	color_rect.color = recursion_color
+	color_rect.mouse_filter = MOUSE_FILTER_IGNORE
 	return color_rect
 
 
@@ -184,8 +194,8 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result.call_deferred("display", initial_value, plugin)
 
 		TYPE_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
+			result = load("res://addons/dictionary_inspector/elements/array_property_editor.gd").new()  # Cyclic ref
+			result.call_deferred("display", initial_value, plugin)
 
 		TYPE_RAW_ARRAY:
 			result = Label.new()
