@@ -48,11 +48,11 @@ func _init(value, type, float_step):
 func add_field_with_label(component_id, value):
   var new_editor = EditorSpinSlider.new()
   new_editor.step = float_step
-  new_editor.value = value
   new_editor.size_flags_horizontal = SIZE_EXPAND_FILL
   new_editor.hide_slider = true
   new_editor.max_value = INF
   new_editor.min_value = -INF
+  new_editor.value = value
   new_editor.connect("value_changed", self, "_on_field_edited", [component_id])
 
   var new_label = Label.new()

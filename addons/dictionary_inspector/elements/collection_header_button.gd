@@ -76,6 +76,7 @@ func _on_pressed():
 		
 		panel_container.add_child(collection_editor)
 		collection_editor.display(stored_collection, plugin)
+		collection_editor.connect("value_changed", self, "_on_value_changed")
 		emit_signal("bottom_control_available", bottom_control)
 
 	else:
@@ -113,4 +114,5 @@ func _on_value_changed(value):
 		("Dictionary" if value is Dictionary else "Array")
 		+ " (size " + str(value.size()) + ")"
 	)
+	stored_collection = value
 	emit_signal("value_changed", value)

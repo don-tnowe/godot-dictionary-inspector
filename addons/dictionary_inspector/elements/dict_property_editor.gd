@@ -116,9 +116,9 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 		TYPE_INT:
 			result = EditorSpinSlider.new()
-			result.value = initial_value
 			result.min_value = -INF
 			result.max_value = INF
+			result.value = initial_value
 
 		TYPE_REAL:
 			result = EditorSpinSlider.new()
@@ -186,7 +186,7 @@ func connect_control(control, type, key, is_key):
 	elif control is EditorResourcePicker:
 		signal_name = "resource_changed"
 
-	elif control is BaseButton:
+	elif control is CheckBox:
 		signal_name = "toggled"
 		
 	elif control is LineEdit:
