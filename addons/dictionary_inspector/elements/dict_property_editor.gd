@@ -188,6 +188,7 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 		TYPE_OBJECT, TYPE_NIL:
 			# Sometimes Objects can be Nil, so type is guessed incorrectly
 			result = EditorResourcePicker.new()
+			result.base_type = "Resource"
 			result.edited_resource = initial_value
 
 		TYPE_DICTIONARY:
