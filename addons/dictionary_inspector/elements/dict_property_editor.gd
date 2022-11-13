@@ -157,10 +157,10 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 		TYPE_REAL:
 			result = EditorSpinSlider.new()
-			result.value = initial_value
 			result.min_value = -INF
 			result.max_value = INF
 			result.step = float_step
+			result.value = initial_value
 			result.hide_slider = true
 
 		TYPE_STRING:

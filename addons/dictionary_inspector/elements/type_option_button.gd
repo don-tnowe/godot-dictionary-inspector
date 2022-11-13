@@ -1,3 +1,4 @@
+tool
 class_name TypeOptionButton
 extends OptionButton
 
@@ -44,8 +45,8 @@ func _ready():
 		for i in custom_icons.size():
 			add_icon_item(custom_icons[i], typenames[i])
 	
-	text = ""
 	set_item_text(0, "DELETE ENTRY")
+	_on_item_selected(selected)
 	connect("item_selected", self, "_on_item_selected")
 
 

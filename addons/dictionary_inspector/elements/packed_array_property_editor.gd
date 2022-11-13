@@ -26,9 +26,8 @@ func can_drop_data(position, data):
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
 	c.add_child(create_color_rect())
-	c.add_child(Button.new())
-	c.get_child(1).text = str(k)
-	c.get_child(1).rect_min_size.x = 24
+	c.add_child(EditorArrayIndex.new(k))
+	c.get_child(1).connect("drop_received", self, "_on_item_moved", [k])
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
 	c.add_child(create_color_rect())
 

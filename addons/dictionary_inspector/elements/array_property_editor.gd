@@ -57,9 +57,8 @@ func create_header():
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
 	c.add_child(create_color_rect())
-	c.add_child(Button.new())
-	c.get_child(1).text = str(k)
-	c.get_child(1).rect_min_size.x = 24
+	c.add_child(EditorArrayIndex.new(k))
+	c.get_child(1).connect("drop_received", self, "_on_item_moved", [k])
 	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
 	c.add_child(create_color_rect())
@@ -108,3 +107,12 @@ func _on_property_deleted(key, control):
 	control.get_parent().queue_free()
 	update_header()
 	emit_signal("value_changed", dict)
+
+
+func _on_item_moved(from, to):
+	var old_value = dict[from]
+	dict.remove(from)
+	dict.insert(to, old_value)
+
+	# Too lazy right now to make proper movement, plus this is more reliable
+	display(dict, plugin)
