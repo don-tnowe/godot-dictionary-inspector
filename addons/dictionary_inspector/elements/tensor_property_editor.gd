@@ -41,6 +41,7 @@ var float_step := 0.01
 func _init(value, type, float_step):
   self.value = value
   self.float_step = float_step
+  add_constant_override("hseparation", 0)
   call("init_" + str(type), value)
 
 
@@ -64,7 +65,14 @@ func add_field_with_label(component_id, value):
 
   new_label.text = component_letters[component_id]
   new_label.self_modulate = colors[component_id] * 1.3
+  new_label.align = Label.ALIGN_CENTER
   # multiplied cause they kinda look too dim and i can't bother with getting the actual correct color
+
+  var new_panel = Panel.new()
+  new_panel.show_behind_parent = true
+  new_panel.modulate = Color(0.75, 0.75, 0.75, 1)
+  new_panel.set_anchors_and_margins_preset(PRESET_WIDE)
+  new_label.add_child(new_panel)
 
 
 func _on_field_edited(value, component_id):

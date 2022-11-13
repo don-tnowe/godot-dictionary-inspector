@@ -14,7 +14,7 @@ func can_handle(object):
 
 func parse_property(object, type, path, hint, hint_text, usage):
 	if type == TYPE_DICTIONARY:
-		add_property_editor(path, DictionaryInspectorProperty.new(plugin))
+		add_property_editor(path, DictionaryInspectorProperty.new(object[path], plugin))
 		return true
 
 	else:

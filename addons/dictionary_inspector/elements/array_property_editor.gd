@@ -2,7 +2,6 @@ tool
 class_name ArrayPropertyEditor
 extends DictPropertyEditor
 
-
 var header_node
 
 
@@ -23,45 +22,23 @@ func drop_data(position, data):
 	if data.has("resource"):
 		_on_add_button_pressed()
 		update_variant(dict.size() - 1, data["resource"], false)
-		get_child(get_child_count() - 2).get_child(2).set_value(data["resource"])
+		get_child(get_child_count() - 1).get_child(2).set_value(data["resource"])
 	
 	for x in data["files"]:
 		_on_add_button_pressed()
 		update_variant(dict.size() - 1, load(x), false)
-		get_child(get_child_count() - 2).get_child(2).drop_data({
-			"tree": data["tree"],
+		get_child(get_child_count() - 1).get_child(2).drop_data({
 			"from": data["from"],
 		})
 
 
-func create_header():
-	var result = MarginContainer.new()
-
-	result.add_child(create_color_rect())
-	result.mouse_filter = MOUSE_FILTER_IGNORE
-	
-	var inner_container = VBoxContainer.new()
-	header_node = Button.new()
-	header_node.mouse_filter = MOUSE_FILTER_IGNORE
-	update_header()
-	header_node.size_flags_vertical = SIZE_EXPAND_FILL
-	header_node.size_flags_horizontal = SIZE_SHRINK_CENTER
-	result.rect_min_size.x = result.get_minimum_size().x + 64.0
-
-	inner_container.add_child(header_node)
-	inner_container.add_child(create_add_button())
-	result.add_child(inner_container)
-	return result
-
-
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
-	c.add_child(create_color_rect())
-	c.add_child(EditorArrayIndex.new(k))
-	c.get_child(1).connect("drop_received", self, "_on_item_moved", [k])
+	var index = EditorArrayIndex.new(k)
+	index.connect("drop_received", self, "_on_item_moved", [k])
+	c.add_child(index)
 	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
-	c.add_child(create_color_rect())
 
 	return c
 
@@ -71,10 +48,6 @@ func update_variant(index, value, is_rename):
 	emit_signal("value_changed", dict)
 
 
-func update_header():
-	header_node.text = "Array (size " + str(dict.size()) + ")"
-
-
 func _on_add_button_pressed():
 	var new_value = default_per_class[last_type_v]
 	if dict.size() > 0 && (last_type_v == TYPE_OBJECT || dict[-1] is Object):
@@ -82,11 +55,10 @@ func _on_add_button_pressed():
 
 	dict.append(new_value)
 	update_variant(dict.size() - 1, new_value, false)
-	update_header()
 
 	var new_node = create_property_container(dict.size() - 1)
 	add_child(new_node)
-	move_child(new_node, get_child_count() - 2)
+	move_child(new_node, get_child_count() - 1)
 
 
 func _on_property_control_type_changed(type, control, key, is_key = false):
@@ -105,7 +77,6 @@ func _on_property_control_type_changed(type, control, key, is_key = false):
 func _on_property_deleted(key, control):
 	dict.remove(key)
 	control.get_parent().queue_free()
-	update_header()
 	emit_signal("value_changed", dict)
 
 

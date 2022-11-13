@@ -25,10 +25,12 @@ func can_drop_data(position, data):
 
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
-	c.add_child(create_color_rect())
 	c.add_child(EditorArrayIndex.new(k))
-	c.get_child(1).connect("drop_received", self, "_on_item_moved", [k])
+	c.get_child(0).connect("drop_received", self, "_on_item_moved", [k])
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
-	c.add_child(create_color_rect())
+	var delete_button = Button.new()
+	delete_button.text = "X"
+	delete_button.connect("pressed", self, "_on_property_deleted", [k, c])
+	c.add_child(delete_button)
 
 	return c

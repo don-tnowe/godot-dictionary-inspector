@@ -37,7 +37,6 @@ const default_per_class = [
 var dict
 var plugin
 var settings
-var recursion_color
 var init_prop_container
 var last_type_k := TYPE_STRING
 var last_type_v := TYPE_REAL
@@ -47,16 +46,14 @@ func display(dict, plugin : EditorPlugin):
 	self.plugin = plugin
 	self.dict = dict
 	settings = plugin.get_editor_interface().get_editor_settings()
-	recursion_color = get_recursion_color()
 	for x in get_children():
 		x.queue_free()
 
-	add_child(create_header())
+	add_child(create_add_button())
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
 	init_prop_container = HBoxContainer.new()
 	init_prop_container.size_flags_horizontal = SIZE_EXPAND_FILL
-	init_prop_container.add_constant_override("separation", 0)
 
 	for k in dict.keys() if dict is Dictionary else dict.size():
 		# YES, the Array editor is just the Dictionary editor but without keys.
@@ -65,7 +62,6 @@ func display(dict, plugin : EditorPlugin):
 		last_type_k = typeof(k)
 		last_type_v = typeof(dict[k])
 	
-	add_child(create_color_rect())
 	size_flags_stretch_ratio = 3
 	rect_min_size.x = 0
 	rect_size.x = 0
@@ -73,62 +69,30 @@ func display(dict, plugin : EditorPlugin):
 	show()  # to update rect
 
 
-func get_recursion_color():
-	var cur_parent = self
-	var recursion_level: = -4
-	while true:
-		recursion_level += 1
-		cur_parent = cur_parent.get_parent()
-		if cur_parent is EditorInspector:
-			break
-	
-	var tint = settings.get_setting("docks/property_editor/subresource_hue_tint")
-	var color = settings.get_setting("interface/theme/accent_color")
-	color = color.blend(Color.from_hsv(
-		color.h + recursion_level * 0.066,
-		color.s,
-		color.v,
-		tint
-	))
-	color.a = 0.66
-	return color
-
-
-func create_header():
-	var result = MarginContainer.new()
-	result.add_child(create_color_rect())
-	result.add_child(create_add_button())
-	# result.rect_min_size.y = get_child(0).get_child(1).get_minimum_size().y + 4
-	return result
-
-
-func create_color_rect() -> ColorRect:
-	var color_rect = ColorRect.new()
-	color_rect.rect_min_size = Vector2(2, 2)
-	color_rect.color = recursion_color
-	color_rect.mouse_filter = MOUSE_FILTER_IGNORE
-	return color_rect
-
-
 func create_add_button():
-	var result = Button.new()
-	result.text = "Add Entry"
-	result.icon = get_icon("Add", "EditorIcons")
-	result.size_flags_vertical = SIZE_SHRINK_CENTER
-	result.size_flags_horizontal = SIZE_SHRINK_CENTER
-	result.rect_min_size.x = result.get_minimum_size().x + 64.0
-	result.connect("pressed", self, "_on_add_button_pressed")
+	var button = Button.new()
+	button.text = "Add Entry"
+	# display can be called before added to scene BUT plugin is passed to display
+	button.icon = plugin.get_editor_interface().get_base_control().get_icon("Add", "EditorIcons")
+	button.size_flags_vertical = SIZE_SHRINK_CENTER
+	button.size_flags_horizontal = SIZE_SHRINK_CENTER
+	button.rect_min_size.x = button.get_minimum_size().x + 64.0
+	button.connect("pressed", self, "_on_add_button_pressed")
+
+	var result = MarginContainer.new()
+	# Grab the Color Rect
+	result.add_child(get_node("../../ColorRect").duplicate())
+	result.get_child(0).self_modulate.a *= 0.87
+	result.add_child(button)
 	return result
 
 
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
-	c.add_child(create_color_rect())
 	c.add_child(create_type_switcher(typeof(k), k, true))
 	c.add_child(create_property_control_for_type(typeof(k), k, k, true))
 	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
-	c.add_child(create_color_rect())
 
 	return c
 
@@ -137,6 +101,7 @@ func create_type_switcher(type, key, is_key) -> TypeOptionButton:
 	var result = TypeOptionButton.new()
 	result.call_deferred("_on_item_selected", type)
 	result.get_popup().connect("index_pressed", self, "_on_property_control_type_changed", [result, key, is_key])
+
 	return result
 
 
@@ -191,19 +156,14 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result.base_type = "Resource"
 			result.edited_resource = initial_value
 
-		TYPE_DICTIONARY:
-			result = get_script().new()
-			result.call_deferred("display", initial_value, plugin)
-
-		TYPE_ARRAY:
-			result = load("res://addons/dictionary_inspector/elements/array_property_editor.gd").new()  # Cyclic ref
-			result.call_deferred("display", initial_value, plugin)
-
+		TYPE_DICTIONARY, TYPE_ARRAY,\
 		TYPE_RAW_ARRAY, TYPE_INT_ARRAY, TYPE_REAL_ARRAY, TYPE_STRING_ARRAY,\
 		TYPE_VECTOR2_ARRAY, TYPE_VECTOR3_ARRAY, TYPE_COLOR_ARRAY:
-			result = load("res://addons/dictionary_inspector/elements/packed_array_property_editor.gd").new()  # Also cyclic ref (i love inheritance) (but not in gdscript) (i also love comments that make lines really long)
-			result.call_deferred("display", initial_value, plugin)
-		
+			var script_file = "res://addons/dictionary_inspector/elements/collection_header_button.gd"
+			result = load(script_file)\
+				.new(initial_value, plugin)
+			result.connect("bottom_control_available", self, "_on_collection_control_available", [result])
+
 		_:
 			result = Label.new()
 			result.text = "Not Supported"
@@ -211,6 +171,10 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 	connect_control(result, type, key, is_key)
 	result.size_flags_horizontal = SIZE_EXPAND_FILL
 	return result
+
+
+func _on_collection_control_available(new_control, created_by_control):
+	add_child_below_node(created_by_control.get_parent(), new_control)
 
 
 func connect_control(control, type, key, is_key):
@@ -276,7 +240,7 @@ func _on_add_button_pressed():
 
 	var new_node = create_property_container(new_key)
 	add_child(new_node)
-	move_child(new_node, get_child_count() - 2)
+	move_child(new_node, get_child_count() - 1)
 
 
 func _on_property_control_value_changed(value, control, key, is_rename = false):
@@ -285,12 +249,12 @@ func _on_property_control_value_changed(value, control, key, is_rename = false):
 		var old_value = dict[key]
 		update_variant(key, value, is_rename)
 		connect_control(control, typeof(value), value, true)
-		connect_control(parent_children[4], typeof(old_value), value, false)
+		connect_control(parent_children[3], typeof(old_value), value, false)
 		yield(get_tree(), "idle_frame")
-		parent_children[1].replace_by(create_type_switcher(typeof(value), value, true))
-		parent_children[1].free()
-		parent_children[3].replace_by(create_type_switcher(typeof(old_value), value, false))
-		parent_children[3].free()
+		parent_children[0].replace_by(create_type_switcher(typeof(value), value, true))
+		parent_children[0].free()
+		parent_children[2].replace_by(create_type_switcher(typeof(old_value), value, false))
+		parent_children[2].free()
 		return
 
 	update_variant(key, value, is_rename)
@@ -302,17 +266,16 @@ func _on_property_control_type_changed(type, control, key, is_key = false):
 		return
 
 	var value = default_per_class[type]
-	var new_editor = create_property_control_for_type(type, value, value if is_key else key, is_key)
-	control.get_parent().get_child(control.get_position_in_parent() + 1).free()
-	control.get_parent().add_child_below_node(control, new_editor)
+	update_variant(key, value, is_key)
 	if is_key:
-		dict[value] = dict[key]  # Needed to reconnect the value's type changer
-		_on_property_control_value_changed(value, control, key, true)
 		last_type_k = type
 
 	else:
-		update_variant(key, value, is_key)
 		last_type_v = type
+	
+	var old_prop = control.get_parent()
+	add_child_below_node(old_prop, create_property_container(value if is_key else key))
+	old_prop.free()
 
 
 func _on_property_deleted(key, control):
