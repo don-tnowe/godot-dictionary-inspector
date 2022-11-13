@@ -59,7 +59,7 @@ func update_header():
 
 func _on_add_button_pressed():
 	var new_value = default_per_class[last_type_v]
-	dict.append(null)
+	dict.append(new_value)
 	update_variant(dict.size() - 1, new_value, false)
 	update_header()
 

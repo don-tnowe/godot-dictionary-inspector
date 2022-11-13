@@ -197,34 +197,11 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result = load("res://addons/dictionary_inspector/elements/array_property_editor.gd").new()  # Cyclic ref
 			result.call_deferred("display", initial_value, plugin)
 
-		TYPE_RAW_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_INT_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_REAL_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_STRING_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_VECTOR2_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_VECTOR3_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_COLOR_ARRAY:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
+		TYPE_RAW_ARRAY, TYPE_INT_ARRAY, TYPE_REAL_ARRAY, TYPE_STRING_ARRAY,\
+		TYPE_VECTOR2_ARRAY, TYPE_VECTOR3_ARRAY, TYPE_COLOR_ARRAY:
+			result = load("res://addons/dictionary_inspector/elements/packed_array_property_editor.gd").new()  # Also cyclic ref (i love inheritance) (but not in gdscript) (i also love comments that make lines really long)
+			result.call_deferred("display", initial_value, plugin)
+		
 		_:
 			result = Label.new()
 			result.text = "Not Supported"
