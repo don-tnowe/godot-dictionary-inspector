@@ -94,7 +94,7 @@ config/icon="res://icon.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/dictionary_inspector/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/dictionary_inspector/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg" )
 
 [gui]
 
