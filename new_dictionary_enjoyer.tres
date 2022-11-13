@@ -1,0 +1,64 @@
+[gd_resource type="Resource" load_steps=6 format=2]
+
+[ext_resource path="res://average_dictionary_enjoyer.gd" type="Script" id=1]
+
+[sub_resource type="Resource" id=4]
+script = ExtResource( 1 )
+dict1 = {
+}
+dict2 = {
+"cool_property": 9
+}
+dict3 = {
+"boring_property": Color( 0.745098, 0.745098, 0.745098, 1 )
+}
+
+[sub_resource type="Resource" id=3]
+script = ExtResource( 1 )
+dict1 = {
+}
+dict2 = {
+"cool_property": 9
+}
+dict3 = {
+"boring_property": Color( 0.745098, 0.745098, 0.745098, 1 )
+}
+res = SubResource( 4 )
+
+[sub_resource type="Resource" id=2]
+script = ExtResource( 1 )
+dict1 = {
+}
+dict2 = {
+"cool_property": 9
+}
+dict3 = {
+"boring_property": Color( 0.745098, 0.745098, 0.745098, 1 )
+}
+res = SubResource( 3 )
+
+[sub_resource type="Resource" id=1]
+script = ExtResource( 1 )
+dict1 = {
+}
+dict2 = {
+"cool_property": 9
+}
+dict3 = {
+"boring_property": Color( 0.745098, 0.745098, 0.745098, 1 )
+}
+res = SubResource( 2 )
+
+[resource]
+script = ExtResource( 1 )
+dict1 = {
+}
+dict2 = {
+"Enter value...22": 0.0,
+"Enter value...222": Vector2( 0, 0 ),
+"Enter value...9": 0.0,
+"Enter value...ss": 0.0
+}
+dict3 = {
+}
+res = SubResource( 1 )

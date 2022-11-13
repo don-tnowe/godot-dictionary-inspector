@@ -1,0 +1,94 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Resource",
+"class": "AverageDictionaryEnjoyer",
+"language": "GDScript",
+"path": "res://average_dictionary_enjoyer.gd"
+}, {
+"base": "VBoxContainer",
+"class": "DictPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/dict_property_editor.gd"
+}, {
+"base": "EditorInspectorPlugin",
+"class": "DictionaryInspectorPlugin",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/inspector_plugin.gd"
+}, {
+"base": "EditorProperty",
+"class": "DictionaryInspectorProperty",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/inspector_property.gd"
+}, {
+"base": "MarginContainer",
+"class": "FloatPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/float_property_editor.gd"
+}, {
+"base": "GridContainer",
+"class": "TensorPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/tensor_property_editor.gd"
+}, {
+"base": "Button",
+"class": "ThemeIconButton",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/editor_icon_button.gd"
+}, {
+"base": "OptionButton",
+"class": "TypeOptionButton",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/type_option_button.gd"
+} ]
+_global_script_class_icons={
+"AverageDictionaryEnjoyer": "",
+"DictPropertyEditor": "",
+"DictionaryInspectorPlugin": "",
+"DictionaryInspectorProperty": "",
+"FloatPropertyEditor": "",
+"TensorPropertyEditor": "",
+"ThemeIconButton": "",
+"TypeOptionButton": ""
+}
+
+[addons]
+
+resources_spreadsheet_view/Color_Rows=true
+resources_spreadsheet_view/Color_Arrays=true
+resources_spreadsheet_view/Array_Min_Width=128.0
+resources_spreadsheet_view/Clip_Headers=false
+resources_spreadsheet_view/Dupe_Arrays=true
+resources_spreadsheet_view/Context_Menu_On_Leftclick=false
+
+[application]
+
+config/name="Addon: Dictionary Inspector"
+config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/dictionary_inspector/plugin.cfg" )
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+quality/driver/driver_name="GLES2"
+vram_compression/import_etc=true
+vram_compression/import_etc2=false
+environment/default_environment="res://default_env.tres"
