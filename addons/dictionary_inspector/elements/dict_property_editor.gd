@@ -48,6 +48,9 @@ func display(dict, plugin : EditorPlugin):
 	self.dict = dict
 	settings = plugin.get_editor_interface().get_editor_settings()
 	recursion_color = get_recursion_color()
+	for x in get_children():
+		x.queue_free()
+
 	add_child(create_header())
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
@@ -63,8 +66,11 @@ func display(dict, plugin : EditorPlugin):
 		last_type_v = typeof(dict[k])
 	
 	add_child(create_color_rect())
+	size_flags_stretch_ratio = 3
 	rect_min_size.x = 0
 	rect_size.x = 0
+	hide()
+	show()  # to update rect
 
 
 func get_recursion_color():
@@ -210,15 +216,16 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 func connect_control(control, type, key, is_key):
 	var signal_name := "value_changed"
-	if control is BaseButton && !control is ObjectPropertyEditor:
+	
+	if control is ColorPickerButton:
+		signal_name = "color_changed"
+
+	elif control is BaseButton && !control is ObjectPropertyEditor:
 		# ObjectPropertyEditor's is "value_changed", but it's still a button!
 		signal_name = "toggled"
 		
 	elif control is LineEdit:
 		signal_name = "text_changed"
-
-	elif control is ColorPickerButton:
-		signal_name = "color_changed"
 
 	elif control is Label || control.get_script() == get_script():
 		# Can't connect anything, but some drawers do use a Label.
@@ -232,8 +239,9 @@ func connect_control(control, type, key, is_key):
 
 func update_variant(key, value, is_rename):
 	if is_rename:
-		dict[value] = dict[key]
-		dict.erase(key)
+		if (typeof(value) != typeof(key) || value != key):
+			dict[value] = dict[key]
+			dict.erase(key)
 	
 	else:
 		dict[key] = value
@@ -267,12 +275,22 @@ func _on_add_button_pressed():
 
 	var new_node = create_property_container(new_key)
 	add_child(new_node)
-	move_child(new_node, 1)
+	move_child(new_node, get_child_count() - 2)
 
 
 func _on_property_control_value_changed(value, control, key, is_rename = false):
 	if is_rename:
-		connect_control(control, typeof(value), value, is_rename)
+		var parent_children = control.get_parent().get_children()
+		var old_value = dict[key]
+		update_variant(key, value, is_rename)
+		connect_control(control, typeof(value), value, true)
+		connect_control(parent_children[4], typeof(old_value), value, false)
+		yield(get_tree(), "idle_frame")
+		parent_children[1].replace_by(create_type_switcher(typeof(value), value, true))
+		parent_children[1].free()
+		parent_children[3].replace_by(create_type_switcher(typeof(old_value), value, false))
+		parent_children[3].free()
+		return
 
 	update_variant(key, value, is_rename)
 
@@ -282,11 +300,13 @@ func _on_property_control_type_changed(type, control, key, is_key = false):
 	var new_editor = create_property_control_for_type(type, value, value if is_key else key, is_key)
 	control.get_parent().get_child(control.get_position_in_parent() + 1).free()
 	control.get_parent().add_child_below_node(control, new_editor)
-	update_variant(key, value, is_key)
 	if is_key:
+		dict[value] = dict[key]  # Needed to reconnect the value's type changer
+		_on_property_control_value_changed(value, control, key, true)
 		last_type_k = type
 
 	else:
+		update_variant(key, value, is_key)
 		last_type_v = type
 
 

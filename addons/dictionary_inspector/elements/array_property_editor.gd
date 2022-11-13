@@ -6,6 +6,14 @@ extends DictPropertyEditor
 var header_node
 
 
+func display(dcit, plugin):
+	.display(dcit, plugin)
+	size_flags_stretch_ratio = 1.0
+	rect_size.x = 0
+	hide()
+	show()  # to update rect again
+
+
 func can_drop_data(position, data):
 	return data.has("files") || data.has("resource")
 

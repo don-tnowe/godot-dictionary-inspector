@@ -23,9 +23,8 @@ func _init(plugin):
 
 
 func _on_button_pressed():
-	# plugin.dialog.display(get_edited_object(), get_edited_property(), plugin)
 	bottom_control.visible = !bottom_control.visible
-	if bottom_control.get_child_count() < 2:
+	if bottom_control.visible:
 		bottom_control.display(current_value, plugin)
 
 
