@@ -7,15 +7,23 @@ var header_node
 
 
 func can_drop_data(position, data):
-	return data.has("files")
+	return data.has("files") || data.has("resource")
 
 
 func drop_data(position, data):
 	last_type_v = TYPE_OBJECT
+	if data.has("resource"):
+		_on_add_button_pressed()
+		update_variant(dict.size() - 1, data["resource"], false)
+		get_child(get_child_count() - 2).get_child(2).set_value(data["resource"])
+	
 	for x in data["files"]:
 		_on_add_button_pressed()
 		update_variant(dict.size() - 1, load(x), false)
-		get_child(get_child_count() - 2).get_child(3).value = load(x)
+		get_child(get_child_count() - 2).get_child(2).drop_data({
+			"tree": data["tree"],
+			"from": data["from"],
+		})
 
 
 func create_header():
