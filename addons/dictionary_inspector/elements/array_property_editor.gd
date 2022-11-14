@@ -22,14 +22,10 @@ func drop_data(position, data):
 	if data.has("resource"):
 		_on_add_button_pressed()
 		update_variant(dict.size() - 1, data["resource"], false)
-		get_child(get_child_count() - 1).get_child(2).set_value(data["resource"])
 	
 	for x in data["files"]:
 		_on_add_button_pressed()
 		update_variant(dict.size() - 1, load(x), false)
-		get_child(get_child_count() - 1).get_child(2).drop_data({
-			"from": data["from"],
-		})
 
 
 func create_property_container(k):
@@ -58,7 +54,6 @@ func _on_add_button_pressed():
 
 	var new_node = create_property_container(dict.size() - 1)
 	add_child(new_node)
-	move_child(new_node, get_child_count() - 1)
 	emit_signal("value_changed", dict)
 
 
@@ -77,8 +72,8 @@ func _on_property_control_type_changed(type, control, key, is_key = false):
 
 func _on_property_deleted(key, control):
 	dict.remove(key)
-	control.get_parent().queue_free()
 	emit_signal("value_changed", dict)
+	display(dict, plugin)
 
 
 func _on_item_moved(from, to):

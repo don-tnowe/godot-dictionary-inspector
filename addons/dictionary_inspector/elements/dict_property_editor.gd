@@ -153,6 +153,7 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 		TYPE_BOOL:
 			result = CheckBox.new()
 			result.text = "On"
+			result.pressed = initial_value
 
 		TYPE_INT:
 			result = EditorSpinSlider.new()
