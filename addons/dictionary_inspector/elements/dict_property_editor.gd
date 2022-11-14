@@ -279,6 +279,7 @@ func _on_add_button_pressed():
 	var new_node = create_property_container(new_key)
 	add_child(new_node)
 	move_child(new_node, get_child_count() - 1)
+	emit_signal("value_changed", dict)
 
 
 func _on_property_control_value_changed(value, control, key, is_rename = false):
