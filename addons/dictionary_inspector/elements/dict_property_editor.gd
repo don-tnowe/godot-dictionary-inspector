@@ -89,10 +89,21 @@ func create_add_button():
 	return result
 
 
+func display_value_on_label(value, label):
+	if value is Color:
+		label.text = "██" + value.to_html() + "██"
+		label.self_modulate = value
+
+	else:
+		label.text = str(value)
+		label.self_modulate = Color.white
+
+
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
 	var label = Label.new()
-	label.text = str(k)
+	display_value_on_label(k, label)
+
 	label.size_flags_horizontal = SIZE_EXPAND_FILL
 	c.add_child(label)
 
@@ -117,7 +128,7 @@ func toggle_property_editable(k, container):
 		container.move_child(children[2], 6)
 
 	else:
-		children[0].text = str(k)
+		display_value_on_label(k, children[0])
 		children[0].show()
 		children[1].queue_free()
 		children[2].queue_free()
