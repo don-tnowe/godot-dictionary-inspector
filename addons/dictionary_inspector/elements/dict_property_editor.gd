@@ -51,7 +51,6 @@ func display(dict, plugin : EditorPlugin):
 		x.queue_free()
 
 	# display can be called before added to scene BUT plugin is passed to display
-	editor_base_ctrl = plugin.get_editor_interface().get_base_control()
 	add_child(create_add_button())
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
@@ -75,7 +74,7 @@ func display(dict, plugin : EditorPlugin):
 func create_add_button():
 	var button = Button.new()
 	button.text = "Add Entry"
-	button.icon = editor_base_ctrl.get_icon("Add", "EditorIcons")
+	button.icon = get_icon("Add", "EditorIcons")
 	button.size_flags_horizontal = SIZE_EXPAND_FILL
 	button.rect_min_size.x = button.get_minimum_size().x + 64.0
 	button.connect("pressed", self, "_on_add_button_pressed")
@@ -106,11 +105,12 @@ func create_property_container(k):
 	var label = Label.new()
 	display_value_on_label(k, label)
 
+	label.clip_text = true
 	label.size_flags_horizontal = SIZE_EXPAND_FILL
 	c.add_child(label)
 
 	var edit_button = Button.new()
-	edit_button.icon = editor_base_ctrl.get_icon("Edit", "EditorIcons")
+	edit_button.icon = get_icon("Edit", "EditorIcons")
 	edit_button.hint_tooltip = "Toggle Key/Type Editing"
 	edit_button.connect("pressed", self, "toggle_property_editable", [k, c])
 	c.add_child(edit_button)
@@ -193,9 +193,8 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 		TYPE_OBJECT, TYPE_NIL:
 			# Sometimes Objects can be Nil, so type is guessed incorrectly
-			result = EditorResourcePicker.new()
+			result = CustomResourcePicker.new(initial_value, plugin)
 			result.base_type = "Resource"
-			result.edited_resource = initial_value
 
 		TYPE_DICTIONARY, TYPE_ARRAY,\
 		TYPE_RAW_ARRAY, TYPE_INT_ARRAY, TYPE_REAL_ARRAY, TYPE_STRING_ARRAY,\

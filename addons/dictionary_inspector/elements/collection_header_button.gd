@@ -49,7 +49,7 @@ func _on_pressed():
 		color_rect.show()
 
 		bottom_control = MarginContainer.new()
-		bottom_control.add_constant_override("margin_top", 1)
+		bottom_control.add_constant_override("margin_top", 0)
 		bottom_control.add_constant_override("margin_left", 1)
 		bottom_control.add_constant_override("margin_bottom", 1)
 		bottom_control.add_constant_override("margin_right", 1 if nested else 0)
