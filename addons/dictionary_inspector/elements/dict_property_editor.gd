@@ -37,6 +37,7 @@ const default_per_class = [
 var dict
 var plugin
 var settings
+var editor_base_ctrl
 var init_prop_container
 var last_type_k := TYPE_STRING
 var last_type_v := TYPE_REAL
@@ -49,6 +50,8 @@ func display(dict, plugin : EditorPlugin):
 	for x in get_children():
 		x.queue_free()
 
+	# display can be called before added to scene BUT plugin is passed to display
+	editor_base_ctrl = plugin.get_editor_interface().get_base_control()
 	add_child(create_add_button())
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
@@ -72,8 +75,7 @@ func display(dict, plugin : EditorPlugin):
 func create_add_button():
 	var button = Button.new()
 	button.text = "Add Entry"
-	# display can be called before added to scene BUT plugin is passed to display
-	button.icon = plugin.get_editor_interface().get_base_control().get_icon("Add", "EditorIcons")
+	button.icon = editor_base_ctrl.get_icon("Add", "EditorIcons")
 	button.size_flags_vertical = SIZE_SHRINK_CENTER
 	button.size_flags_horizontal = SIZE_SHRINK_CENTER
 	button.rect_min_size.x = button.get_minimum_size().x + 64.0
@@ -89,12 +91,37 @@ func create_add_button():
 
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
-	c.add_child(create_type_switcher(typeof(k), k, true))
-	c.add_child(create_property_control_for_type(typeof(k), k, k, true))
-	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
+	var label = Label.new()
+	label.text = str(k)
+	label.size_flags_horizontal = SIZE_EXPAND_FILL
+	c.add_child(label)
+
+	var edit_button = Button.new()
+	edit_button.icon = editor_base_ctrl.get_icon("Edit", "EditorIcons")
+	edit_button.hint_tooltip = "Toggle Key/Type Editing"
+	edit_button.connect("pressed", self, "toggle_property_editable", [k, c])
+	c.add_child(edit_button)
 	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
 
 	return c
+
+
+func toggle_property_editable(k, container):
+	var children = container.get_children()
+	if children[0].visible:
+		children[0].hide()
+		container.add_child(create_type_switcher(typeof(k), k, true))
+		container.add_child(create_property_control_for_type(typeof(k), k, k, true))
+		container.add_child(create_type_switcher(typeof(dict[k]), k, false))
+		container.move_child(children[1], 4)
+		container.move_child(children[2], 6)
+
+	else:
+		children[0].text = str(k)
+		children[0].show()
+		children[1].queue_free()
+		children[2].queue_free()
+		children[4].queue_free()
 
 
 func create_type_switcher(type, key, is_key) -> TypeOptionButton:
@@ -249,12 +276,14 @@ func _on_property_control_value_changed(value, control, key, is_rename = false):
 		var old_value = dict[key]
 		update_variant(key, value, is_rename)
 		connect_control(control, typeof(value), value, true)
-		connect_control(parent_children[3], typeof(old_value), value, false)
+		connect_control(parent_children[5], typeof(old_value), value, false)
 		yield(get_tree(), "idle_frame")
-		parent_children[0].replace_by(create_type_switcher(typeof(value), value, true))
-		parent_children[0].free()
-		parent_children[2].replace_by(create_type_switcher(typeof(old_value), value, false))
-		parent_children[2].free()
+		parent_children[1].replace_by(create_type_switcher(typeof(value), value, true))
+		parent_children[1].free()
+		parent_children[3].disconnect("pressed", self, "toggle_property_editable")
+		parent_children[3].connect("pressed", self, "toggle_property_editable", [value, control.get_parent()])
+		parent_children[4].replace_by(create_type_switcher(typeof(old_value), value, false))
+		parent_children[4].free()
 		return
 
 	update_variant(key, value, is_rename)
