@@ -76,16 +76,18 @@ func create_add_button():
 	var button = Button.new()
 	button.text = "Add Entry"
 	button.icon = editor_base_ctrl.get_icon("Add", "EditorIcons")
-	button.size_flags_vertical = SIZE_SHRINK_CENTER
-	button.size_flags_horizontal = SIZE_SHRINK_CENTER
+	button.size_flags_horizontal = SIZE_EXPAND_FILL
 	button.rect_min_size.x = button.get_minimum_size().x + 64.0
 	button.connect("pressed", self, "_on_add_button_pressed")
 
-	var result = MarginContainer.new()
+	var result = HBoxContainer.new()
+	var color_rect = get_node("../../ColorRect").duplicate()
+	color_rect.size_flags_horizontal = SIZE_EXPAND_FILL
 	# Grab the Color Rect
-	result.add_child(get_node("../../ColorRect").duplicate())
-	result.get_child(0).self_modulate.a *= 0.87
+	result.add_constant_override("separation", 0)
+	result.add_child(color_rect)
 	result.add_child(button)
+	result.add_child(color_rect.duplicate())
 	return result
 
 
