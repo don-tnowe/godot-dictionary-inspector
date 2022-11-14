@@ -80,6 +80,5 @@ func _on_item_moved(from, to):
 	var old_value = dict[from]
 	dict.remove(from)
 	dict.insert(to, old_value)
-
-	# Too lazy right now to make proper movement, plus this is more reliable
+	emit_signal("value_changed", dict)
 	display(dict, plugin)
