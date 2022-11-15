@@ -39,21 +39,21 @@ func create_add_button():
 	return result
 
 
-func create_property_container(k):
+func create_property_container(index_in_collection):
 	var c = init_prop_container.duplicate()
-	c.add_child(EditorArrayIndex.new(k))
-	c.get_child(0).connect("drop_received", self, "_on_item_moved", [k])
-	c.add_child(create_property_control_for_type(last_type_v, stored_collection[k], k, false))
+	c.add_child(EditorArrayIndex.new(index_in_collection))
+	c.get_child(0).connect("drop_received", self, "_on_item_moved", [c])
+	c.add_child(create_property_control_for_type(last_type_v, stored_collection[index_in_collection], c, false))
 	var delete_button = Button.new()
 	delete_button.text = "X"
-	delete_button.connect("pressed", self, "_on_property_deleted", [k, c])
+	delete_button.connect("pressed", self, "_on_property_deleted", [index_in_collection, c])
 	c.add_child(delete_button)
 
 	return c
 
 
 func _on_add_button_pressed():
-	var new_value = default_per_class[last_type_v]
+	var new_value = get_default_for_class(last_type_v)
 	if stored_collection.size() > 0 && (
 		last_type_v == TYPE_OBJECT || stored_collection[-1] is Object
 	):
@@ -73,9 +73,16 @@ func _on_property_deleted(key, control):
 	display(stored_collection, plugin)
 
 
-func _on_item_moved(from, to):
-	var old_value = stored_collection[from]
-	stored_collection.remove(from)
-	stored_collection.insert(to, old_value)
+func _on_item_moved(from_container, to_container):
+	var to_index = get_container_index(to_container)
+	var from_index = get_container_index(from_container)
+	stored_collection.insert(to_index, stored_collection.pop_at(from_index))
+
+	move_child(from_container, to_index + 1)
+	var i = 0
+	for x in get_children():
+		if x is HBoxContainer && x.get_child(0) is EditorArrayIndex:
+			x.get_child(0).value = i
+			i += 1
+	
 	emit_signal("value_changed", stored_collection)
-	display(stored_collection, plugin)

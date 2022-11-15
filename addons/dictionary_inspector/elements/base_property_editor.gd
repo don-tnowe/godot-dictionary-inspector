@@ -47,7 +47,7 @@ func display(collection, plugin : EditorPlugin):
 	self.stored_collection = collection
 	settings = plugin.get_editor_interface().get_editor_settings()
 	for x in get_children():
-		x.queue_free()
+		x.free()
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
 	init_prop_container = HBoxContainer.new()
@@ -78,7 +78,7 @@ func create_property_container(k):
 	return label
 
 
-func create_property_control_for_type(type, initial_value, key, is_key) -> Control:
+func create_property_control_for_type(type, initial_value, container, is_key) -> Control:
 	var result
 	var settings = plugin.get_editor_interface().get_editor_settings()
 	var float_step = settings.get_setting("interface/inspector/default_float_step")
@@ -137,7 +137,7 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result = Label.new()
 			result.text = "Not Supported"
 	
-	connect_control(result, type, key, is_key)
+	connect_control(result, type, container, is_key)
 	result.size_flags_horizontal = SIZE_EXPAND_FILL
 	return result
 
@@ -151,8 +151,32 @@ func _on_collection_control_available(new_control, created_by_control):
 	add_child_below_node(below_node, new_control)
 
 
+func get_default_for_class(type, is_key = false):
+	var new_value = default_per_class[type]
+	if type == TYPE_DICTIONARY || type == TYPE_ARRAY:
+		return new_value.duplicate(true)
+	
+	if !is_key: return new_value
+	while stored_collection.has(new_value):
+		if type == TYPE_INT || type == TYPE_REAL:
+			new_value += 1
 
-func connect_control(control, type, key, is_key):
+		elif type == TYPE_STRING || type == TYPE_NODE_PATH:
+			new_value += "2"
+		
+		elif type == TYPE_VECTOR2 || type == TYPE_VECTOR3:
+			new_value.x += 1.0
+
+		elif type == TYPE_COLOR:
+			new_value = new_value.from_hsv(new_value.h + 0.01, new_value.s, new_value.v)
+
+		else:
+			return new_value
+
+	return new_value
+
+
+func connect_control(control, type, container, is_key):
 	var signal_name := "value_changed"
 	
 	if control is ColorPickerButton:
@@ -174,14 +198,13 @@ func connect_control(control, type, key, is_key):
 	if control.is_connected(signal_name, self, "_on_property_control_value_changed"):
 		control.disconnect(signal_name, self, "_on_property_control_value_changed")
 	
-	control.connect(signal_name, self, "_on_property_control_value_changed", [control, key, is_key])
+	control.connect(signal_name, self, "_on_property_control_value_changed", [control, container, is_key])
 
 
-
-func create_type_switcher(type, key, is_key) -> TypeOptionButton:
+func create_type_switcher(type, container, is_key) -> TypeOptionButton:
 	var result = TypeOptionButton.new()
 	result.call_deferred("_on_item_selected", type)
-	result.get_popup().connect("index_pressed", self, "_on_property_control_type_changed", [result, key, is_key])
+	result.get_popup().connect("index_pressed", self, "_on_property_control_type_changed", [result, container, is_key])
 
 	return result
 
@@ -191,5 +214,17 @@ func update_variant(key, value, is_rename = false):
 	emit_signal("value_changed", stored_collection)
 
 
-func _on_property_control_value_changed(value, control, key, is_rename = false):
-	update_variant(key, value, is_rename)
+func get_container_index(container) -> int:
+	var i := -1
+	for x in get_children():
+		if x == container:
+			return i
+
+		if x is HBoxContainer:
+			i += 1
+
+	return -1
+
+
+func _on_property_control_value_changed(value, control, container, is_rename = false):
+	update_variant(get_container_index(container), value, is_rename)
