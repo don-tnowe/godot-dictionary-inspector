@@ -109,7 +109,11 @@ func handle_menu_selected(id):
 
 func _the_cooler_handle_menu_selected(id):
 	if id == 2:
-		plugin.get_editor_interface().edit_resource(edited_resource)
+		if edited_resource is Script:
+			plugin.get_editor_interface().edit_script(edited_resource)
+
+		else:
+			plugin.get_editor_interface().edit_resource(edited_resource)
 
 
 # func get_saved_type():

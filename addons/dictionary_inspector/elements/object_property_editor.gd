@@ -26,6 +26,33 @@ func add_all_properties(collection):
 	add_child(create_property_container(i - 2))
 
 
+func create_add_button():
+	var result = HBoxContainer.new()
+	var color_rect = ColorRect.new()
+	color_rect.color = get_node("../../ColorRect").color
+	color_rect.show_behind_parent = true
+	color_rect.set_anchors_and_margins_preset(PRESET_WIDE)
+
+	var icon = TextureRect.new()
+	result.add_child(icon)
+	icon.texture = get_icon(stored_collection.get_class(), "EditorIcons")
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	icon.add_child(color_rect)
+	result.add_child(Label.new())
+	result.get_child(1).text = stored_collection.resource_path.get_file()
+
+	var folderpath = Label.new()
+	result.add_child(folderpath)
+	folderpath.text = stored_collection.resource_path.get_base_dir()
+	folderpath.add_child(color_rect.duplicate())
+	folderpath.size_flags_horizontal = SIZE_EXPAND_FILL
+	folderpath.clip_text = true
+
+	icon.rect_min_size.x = icon.get_minimum_size().x + 8
+
+	return result
+
+
 func create_property_container(index_in_collection):
 	var c = init_prop_container.duplicate()
 	var key = all_properties[index_in_collection]
@@ -40,4 +67,4 @@ func create_property_container(index_in_collection):
 
 
 func _on_property_control_value_changed(value, control, container, is_rename = false):
-	update_variant(all_properties[get_container_index(container) + 1], value, is_rename)
+	update_variant(all_properties[get_container_index(container)], value, is_rename)
