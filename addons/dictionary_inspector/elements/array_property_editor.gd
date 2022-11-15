@@ -1,16 +1,14 @@
 tool
 class_name ArrayPropertyEditor
-extends DictPropertyEditor
+extends PackedArrayPropertyEditor
 
 var header_node
 
 
-func display(dcit, plugin):
-	.display(dcit, plugin)
-	size_flags_stretch_ratio = 1.0
-	rect_size.x = 0
-	hide()
-	show()  # to update rect again
+func add_all_properties(collection):
+	last_type_v = typeof(collection[-1])
+	for i in collection.size():
+		add_child(create_property_container(i))
 
 
 func can_drop_data(position, data):
@@ -21,11 +19,11 @@ func drop_data(position, data):
 	last_type_v = TYPE_OBJECT
 	if data.has("resource"):
 		_on_add_button_pressed()
-		update_variant(dict.size() - 1, data["resource"], false)
+		update_variant(stored_collection.size() - 1, data["resource"], false)
 	
 	for x in data["files"]:
 		_on_add_button_pressed()
-		update_variant(dict.size() - 1, load(x), false)
+		update_variant(stored_collection.size() - 1, load(x), false)
 
 
 func create_property_container(k):
@@ -33,28 +31,10 @@ func create_property_container(k):
 	var index = EditorArrayIndex.new(k)
 	index.connect("drop_received", self, "_on_item_moved", [k])
 	c.add_child(index)
-	c.add_child(create_type_switcher(typeof(dict[k]), k, false))
-	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
+	c.add_child(create_type_switcher(typeof(stored_collection[k]), k, false))
+	c.add_child(create_property_control_for_type(typeof(stored_collection[k]), stored_collection[k], k, false))
 
 	return c
-
-
-func update_variant(index, value, is_rename):
-	dict[index] = value
-	emit_signal("value_changed", dict)
-
-
-func _on_add_button_pressed():
-	var new_value = default_per_class[last_type_v]
-	if dict.size() > 0 && (last_type_v == TYPE_OBJECT || dict[-1] is Object):
-		new_value = dict[-1].duplicate()
-
-	dict.append(new_value)
-	update_variant(dict.size() - 1, new_value, false)
-
-	var new_node = create_property_container(dict.size() - 1)
-	add_child(new_node)
-	emit_signal("value_changed", dict)
 
 
 func _on_property_control_type_changed(type, control, key, is_key = false):
@@ -68,17 +48,3 @@ func _on_property_control_type_changed(type, control, key, is_key = false):
 	control.get_parent().add_child_below_node(control, new_editor)
 	update_variant(key, value, false)
 	last_type_v = type
-
-
-func _on_property_deleted(key, control):
-	dict.remove(key)
-	emit_signal("value_changed", dict)
-	display(dict, plugin)
-
-
-func _on_item_moved(from, to):
-	var old_value = dict[from]
-	dict.remove(from)
-	dict.insert(to, old_value)
-	emit_signal("value_changed", dict)
-	display(dict, plugin)

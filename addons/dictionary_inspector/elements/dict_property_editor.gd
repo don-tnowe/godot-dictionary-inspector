@@ -1,93 +1,18 @@
 tool
 class_name DictPropertyEditor
-extends VBoxContainer
+extends PackedArrayPropertyEditor
 
-signal value_changed(new_value)
-
-const default_per_class = [
-	null,
-	false,
-	0,
-	0.0,
-	"Enter value...",
-	Vector2(),
-	Rect2(),
-	Vector3(),
-	Transform2D(),
-	Plane(),
-	Quat(),
-	AABB(),
-	Basis(),
-	Transform(),
-	Color(),
-	NodePath(),
-	RID(),
-	null,
-	Dictionary(),
-	Array(),
-	PoolByteArray(),
-	PoolIntArray(),
-	PoolRealArray(),
-	PoolStringArray(),
-	PoolVector2Array(),
-	PoolVector3Array(),
-	PoolColorArray(),
-]
-
-var dict
-var plugin
-var settings
-var init_prop_container
 var last_type_k := TYPE_STRING
-var last_type_v := TYPE_REAL
 
 
-func display(dict, plugin : EditorPlugin):
-	self.plugin = plugin
-	self.dict = dict
-	settings = plugin.get_editor_interface().get_editor_settings()
-	for x in get_children():
-		x.queue_free()
-
-	add_child(create_add_button())
-
-	size_flags_horizontal = SIZE_EXPAND_FILL
-	init_prop_container = HBoxContainer.new()
-	init_prop_container.size_flags_horizontal = SIZE_EXPAND_FILL
-
-	for k in dict.keys() if dict is Dictionary else dict.size():
-		# YES, the Array editor is just the Dictionary editor but without keys.
-		# That's why this check is necessary.
-		add_child(create_property_container(k))
+func add_all_properties(collection):
+	for k in collection:
+		last_type_v = typeof(collection[k])
 		last_type_k = typeof(k)
-		last_type_v = typeof(dict[k])
-	
-	rect_min_size.x = 0
-	rect_size.x = 0
-	hide()
-	show()  # to update rect
+		add_child(create_property_container(k))
 
 
-func create_add_button():
-	var button = Button.new()
-	button.text = "Add Entry"
-	button.icon = get_icon("Add", "EditorIcons")
-	button.size_flags_horizontal = SIZE_EXPAND_FILL
-	button.rect_min_size.x = button.get_minimum_size().x + 64.0
-	button.connect("pressed", self, "_on_add_button_pressed")
-
-	var result = HBoxContainer.new()
-	var color_rect = get_node("../../ColorRect").duplicate()
-	color_rect.size_flags_horizontal = SIZE_EXPAND_FILL
-	# Grab the Color Rect
-	result.add_constant_override("separation", 0)
-	result.add_child(color_rect)
-	result.add_child(button)
-	result.add_child(color_rect.duplicate())
-	return result
-
-
-func display_value_on_label(value, label):
+func display_key_on_label(value, label):
 	if value is Color:
 		label.text = "██" + value.to_html() + "██"
 		label.self_modulate = value
@@ -100,7 +25,7 @@ func display_value_on_label(value, label):
 func create_property_container(k):
 	var c = init_prop_container.duplicate()
 	var label = Label.new()
-	display_value_on_label(k, label)
+	display_key_on_label(k, label)
 
 	label.clip_text = true
 	label.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -111,7 +36,7 @@ func create_property_container(k):
 	edit_button.hint_tooltip = "Toggle Key/Type Editing"
 	edit_button.connect("pressed", self, "toggle_property_editable", [k, c])
 	c.add_child(edit_button)
-	c.add_child(create_property_control_for_type(typeof(dict[k]), dict[k], k, false))
+	c.add_child(create_property_control_for_type(typeof(stored_collection[k]), stored_collection[k], k, false))
 
 	return c
 
@@ -122,133 +47,28 @@ func toggle_property_editable(k, container):
 		children[0].hide()
 		container.add_child(create_type_switcher(typeof(k), k, true))
 		container.add_child(create_property_control_for_type(typeof(k), k, k, true))
-		container.add_child(create_type_switcher(typeof(dict[k]), k, false))
+		container.add_child(create_type_switcher(typeof(stored_collection[k]), k, false))
 		container.move_child(children[1], 4)
 		container.move_child(children[2], 6)
 
 	else:
-		display_value_on_label(k, children[0])
+		display_key_on_label(k, children[0])
 		children[0].show()
 		children[1].queue_free()
 		children[2].queue_free()
 		children[4].queue_free()
 
 
-func create_type_switcher(type, key, is_key) -> TypeOptionButton:
-	var result = TypeOptionButton.new()
-	result.call_deferred("_on_item_selected", type)
-	result.get_popup().connect("index_pressed", self, "_on_property_control_type_changed", [result, key, is_key])
-
-	return result
-
-
-func create_property_control_for_type(type, initial_value, key, is_key) -> Control:
-	var result
-	var settings = plugin.get_editor_interface().get_editor_settings()
-	var float_step = settings.get_setting("interface/inspector/default_float_step")
-	match(type):
-		TYPE_BOOL:
-			result = CheckBox.new()
-			result.text = "On"
-			result.pressed = initial_value
-
-		TYPE_INT:
-			result = EditorSpinSlider.new()
-			result.min_value = -INF
-			result.max_value = INF
-			result.value = initial_value
-
-		TYPE_REAL:
-			result = EditorSpinSlider.new()
-			result.min_value = -INF
-			result.max_value = INF
-			result.step = float_step
-			result.value = initial_value
-			result.hide_slider = true
-
-		TYPE_STRING:
-			result = LineEdit.new()
-			result.text = initial_value
-
-		TYPE_VECTOR2, TYPE_RECT2, TYPE_VECTOR3,\
-		TYPE_TRANSFORM2D, TYPE_PLANE, TYPE_QUAT,\
-		TYPE_AABB, TYPE_BASIS, TYPE_TRANSFORM:
-			# This big boy will handle the distinction.
-			result = TensorPropertyEditor.new(initial_value, type, float_step)
-
-		TYPE_COLOR:
-			result = ColorPickerButton.new()
-			result.color = initial_value
-
-		TYPE_NODE_PATH:
-			result = LineEdit.new()
-			result.text = initial_value
-
-		TYPE_RID:
-			result = Label.new()
-			result.text = "[not supported yet]"
-
-		TYPE_OBJECT, TYPE_NIL,\
-		TYPE_DICTIONARY, TYPE_ARRAY,\
-		TYPE_RAW_ARRAY, TYPE_INT_ARRAY, TYPE_REAL_ARRAY, TYPE_STRING_ARRAY,\
-		TYPE_VECTOR2_ARRAY, TYPE_VECTOR3_ARRAY, TYPE_COLOR_ARRAY:
-			var script_file = "res://addons/dictionary_inspector/elements/collection_header_button.gd"
-			result = load(script_file).new(initial_value, plugin)
-			result.connect("bottom_control_available", self, "_on_collection_control_available", [result])
-
-		_:
-			result = Label.new()
-			result.text = "Not Supported"
-	
-	connect_control(result, type, key, is_key)
-	result.size_flags_horizontal = SIZE_EXPAND_FILL
-	return result
-
-
-func _on_collection_control_available(new_control, created_by_control):
-	var below_node = created_by_control.get_parent()
-	if below_node is EditorResourcePicker:
-		# Object editor buttons get replaced by a Picker and become their child.
-		below_node = below_node.get_parent()
-
-	add_child_below_node(below_node, new_control)
-
-
-func connect_control(control, type, key, is_key):
-	var signal_name := "value_changed"
-	
-	if control is ColorPickerButton:
-		signal_name = "color_changed"
-
-	elif control is EditorResourcePicker:
-		signal_name = "resource_changed"
-
-	elif control is CheckBox:
-		signal_name = "toggled"
-		
-	elif control is LineEdit:
-		signal_name = "text_changed"
-
-	elif control is Label || control.get_script() == get_script():
-		# Can't connect anything, but some drawers do use a Label.
-		return
-	
-	if control.is_connected(signal_name, self, "_on_property_control_value_changed"):
-		control.disconnect(signal_name, self, "_on_property_control_value_changed")
-	
-	control.connect(signal_name, self, "_on_property_control_value_changed", [control, key, is_key])
-
-
-func update_variant(key, value, is_rename):
+func update_variant(key, value, is_rename = false):
 	if is_rename:
 		if (typeof(value) != typeof(key) || value != key):
-			dict[value] = dict[key]
-			dict.erase(key)
+			stored_collection[value] = stored_collection[key]
+			stored_collection.erase(key)
 	
 	else:
-		dict[key] = value
+		stored_collection[key] = value
 	
-	emit_signal("value_changed", dict)
+	emit_signal("value_changed", stored_collection)
 
 
 func _on_add_button_pressed():
@@ -257,7 +77,7 @@ func _on_add_button_pressed():
 
 	var new_key = default_per_class[last_type_k]
 	var new_value = default_per_class[last_type_v]
-	while dict.has(new_key):
+	while stored_collection.has(new_key):
 		if last_type_k == TYPE_INT || last_type_k == TYPE_REAL:
 			new_key += 1
 
@@ -273,31 +93,31 @@ func _on_add_button_pressed():
 		else:
 			return
 	
-	dict[new_key] = new_value
+	stored_collection[new_key] = new_value
 
 	var new_node = create_property_container(new_key)
 	add_child(new_node)
 	move_child(new_node, get_child_count() - 1)
-	emit_signal("value_changed", dict)
+	emit_signal("value_changed", stored_collection)
 
 
 func _on_property_control_value_changed(value, control, key, is_rename = false):
-	if is_rename:
-		var parent_children = control.get_parent().get_children()
-		var old_value = dict[key]
+	if !is_rename:
 		update_variant(key, value, is_rename)
-		connect_control(control, typeof(value), value, true)
-		connect_control(parent_children[5], typeof(old_value), value, false)
-		yield(get_tree(), "idle_frame")
-		parent_children[1].replace_by(create_type_switcher(typeof(value), value, true))
-		parent_children[1].free()
-		parent_children[3].disconnect("pressed", self, "toggle_property_editable")
-		parent_children[3].connect("pressed", self, "toggle_property_editable", [value, control.get_parent()])
-		parent_children[4].replace_by(create_type_switcher(typeof(old_value), value, false))
-		parent_children[4].free()
 		return
 
+	var parent_children = control.get_parent().get_children()
+	var old_value = stored_collection[key]
 	update_variant(key, value, is_rename)
+	connect_control(control, typeof(value), value, true)
+	connect_control(parent_children[5], typeof(old_value), value, false)
+	yield(get_tree(), "idle_frame")
+	parent_children[1].replace_by(create_type_switcher(typeof(value), value, true))
+	parent_children[1].free()
+	parent_children[3].disconnect("pressed", self, "toggle_property_editable")
+	parent_children[3].connect("pressed", self, "toggle_property_editable", [value, control.get_parent()])
+	parent_children[4].replace_by(create_type_switcher(typeof(old_value), value, false))
+	parent_children[4].free()
 
 
 func _on_property_control_type_changed(type, control, key, is_key = false):
@@ -307,18 +127,17 @@ func _on_property_control_type_changed(type, control, key, is_key = false):
 
 	var value = default_per_class[type]
 	update_variant(key, value, is_key)
+	var old_prop = control.get_parent()
+	add_child_below_node(old_prop, create_property_container(value if is_key else key))
+	old_prop.free()
 	if is_key:
 		last_type_k = type
 
 	else:
 		last_type_v = type
-	
-	var old_prop = control.get_parent()
-	add_child_below_node(old_prop, create_property_container(value if is_key else key))
-	old_prop.free()
 
 
 func _on_property_deleted(key, control):
-	dict.erase(key)
+	stored_collection.erase(key)
 	control.get_parent().queue_free()
-	emit_signal("value_changed", dict)
+	emit_signal("value_changed", stored_collection)

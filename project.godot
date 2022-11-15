@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "DictPropertyEditor",
+"base": "PackedArrayPropertyEditor",
 "class": "ArrayPropertyEditor",
 "language": "GDScript",
 "path": "res://addons/dictionary_inspector/elements/array_property_editor.gd"
@@ -19,12 +19,22 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://average_dictionary_enjoyer.gd"
 }, {
+"base": "VBoxContainer",
+"class": "BaseCollectionPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/base_property_editor.gd"
+}, {
 "base": "Button",
 "class": "CollectionHeaderButton",
 "language": "GDScript",
 "path": "res://addons/dictionary_inspector/elements/collection_header_button.gd"
 }, {
-"base": "VBoxContainer",
+"base": "EditorResourcePicker",
+"class": "CustomResourcePicker",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/custom_resource_picker.gd"
+}, {
+"base": "PackedArrayPropertyEditor",
 "class": "DictPropertyEditor",
 "language": "GDScript",
 "path": "res://addons/dictionary_inspector/elements/dict_property_editor.gd"
@@ -44,7 +54,12 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/dictionary_inspector/elements/array_index.gd"
 }, {
-"base": "ArrayPropertyEditor",
+"base": "BaseCollectionPropertyEditor",
+"class": "ObjectPropertyEditor",
+"language": "GDScript",
+"path": "res://addons/dictionary_inspector/elements/object_property_editor.gd"
+}, {
+"base": "BaseCollectionPropertyEditor",
 "class": "PackedArrayPropertyEditor",
 "language": "GDScript",
 "path": "res://addons/dictionary_inspector/elements/packed_array_property_editor.gd"
@@ -67,11 +82,14 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "ArrayPropertyEditor": "",
 "AverageDictionaryEnjoyer": "",
+"BaseCollectionPropertyEditor": "",
 "CollectionHeaderButton": "",
+"CustomResourcePicker": "",
 "DictPropertyEditor": "",
 "DictionaryInspectorPlugin": "",
 "DictionaryInspectorProperty": "",
 "EditorArrayIndex": "",
+"ObjectPropertyEditor": "",
 "PackedArrayPropertyEditor": "",
 "TensorPropertyEditor": "",
 "ThemeIconButton": "",
