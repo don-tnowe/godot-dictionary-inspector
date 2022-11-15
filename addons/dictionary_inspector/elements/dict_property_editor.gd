@@ -37,7 +37,6 @@ const default_per_class = [
 var dict
 var plugin
 var settings
-var editor_base_ctrl
 var init_prop_container
 var last_type_k := TYPE_STRING
 var last_type_v := TYPE_REAL
@@ -50,7 +49,6 @@ func display(dict, plugin : EditorPlugin):
 	for x in get_children():
 		x.queue_free()
 
-	# display can be called before added to scene BUT plugin is passed to display
 	add_child(create_add_button())
 
 	size_flags_horizontal = SIZE_EXPAND_FILL
@@ -64,7 +62,6 @@ func display(dict, plugin : EditorPlugin):
 		last_type_k = typeof(k)
 		last_type_v = typeof(dict[k])
 	
-	size_flags_stretch_ratio = 3
 	rect_min_size.x = 0
 	rect_size.x = 0
 	hide()
@@ -191,17 +188,12 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 			result = Label.new()
 			result.text = "[not supported yet]"
 
-		TYPE_OBJECT, TYPE_NIL:
-			# Sometimes Objects can be Nil, so type is guessed incorrectly
-			result = CustomResourcePicker.new(initial_value, plugin)
-			result.base_type = "Resource"
-
+		TYPE_OBJECT, TYPE_NIL,\
 		TYPE_DICTIONARY, TYPE_ARRAY,\
 		TYPE_RAW_ARRAY, TYPE_INT_ARRAY, TYPE_REAL_ARRAY, TYPE_STRING_ARRAY,\
 		TYPE_VECTOR2_ARRAY, TYPE_VECTOR3_ARRAY, TYPE_COLOR_ARRAY:
 			var script_file = "res://addons/dictionary_inspector/elements/collection_header_button.gd"
-			result = load(script_file)\
-				.new(initial_value, plugin)
+			result = load(script_file).new(initial_value, plugin)
 			result.connect("bottom_control_available", self, "_on_collection_control_available", [result])
 
 		_:
@@ -214,7 +206,12 @@ func create_property_control_for_type(type, initial_value, key, is_key) -> Contr
 
 
 func _on_collection_control_available(new_control, created_by_control):
-	add_child_below_node(created_by_control.get_parent(), new_control)
+	var below_node = created_by_control.get_parent()
+	if below_node is EditorResourcePicker:
+		# Object editor buttons get replaced by a Picker and become their child.
+		below_node = below_node.get_parent()
+
+	add_child_below_node(below_node, new_control)
 
 
 func connect_control(control, type, key, is_key):
@@ -238,7 +235,7 @@ func connect_control(control, type, key, is_key):
 	
 	if control.is_connected(signal_name, self, "_on_property_control_value_changed"):
 		control.disconnect(signal_name, self, "_on_property_control_value_changed")
-
+	
 	control.connect(signal_name, self, "_on_property_control_value_changed", [control, key, is_key])
 
 

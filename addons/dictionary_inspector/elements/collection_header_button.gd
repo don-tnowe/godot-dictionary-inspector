@@ -36,6 +36,15 @@ func _ready():
 	add_stylebox_override("focus", StyleBoxEmpty.new())
 
 	_on_value_changed(stored_collection)
+	if stored_collection is Object || stored_collection == null:
+		yield(get_tree(), "idle_frame")
+		var picker = CustomResourcePicker.new(stored_collection, plugin)
+		replace_by(picker)
+		picker.size_flags_horizontal = SIZE_EXPAND_FILL
+		picker.add_child(self)
+		picker.get_node("Button").connect("pressed", self, "_on_pressed")
+		picker.connect("resource_changed", self, "_on_value_changed")
+		hide()
 
 
 func _exit_tree():
@@ -44,6 +53,7 @@ func _exit_tree():
 
 
 func _on_pressed():
+	if stored_collection == null: return
 	if bottom_control == null:
 		flat = true
 		color_rect.show()
@@ -73,6 +83,8 @@ func _on_pressed():
 			if stored_collection is Dictionary else
 			ArrayPropertyEditor
 			if stored_collection is Array else
+			ObjectPropertyEditor
+			if stored_collection is Object else
 			PackedArrayPropertyEditor
 		).new()
 		
@@ -109,16 +121,17 @@ func get_recursion_color():
 		color.v,
 		tint
 	))
-	color.a = 0.55
+	color.a = 0.58
 	color2.a = 1.0
 	color = color2.blend(color)
 	return color
 
 
 func _on_value_changed(value):
-	text = (
-		("Dictionary" if value is Dictionary else "Array")
-		+ " (size " + str(value.size()) + ")"
-	)
+	if !value is Object:
+		text = (
+			("Dictionary" if value is Dictionary else "Array")
+			+ " (size " + str(value.size()) + ")"
+		)
 	stored_collection = value
 	emit_signal("value_changed", value)

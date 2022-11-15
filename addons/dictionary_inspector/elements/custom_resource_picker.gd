@@ -15,15 +15,19 @@ func _init(resource, plugin):
 
 
 func _ready():
-	if edited_resource == null:
-		base_type = "Resource"
-		return
+	base_type = get_resource_base_type(edited_resource)
+	$"PopupMenu".connect("id_pressed", self, "_the_cooler_handle_menu_selected")
+
+
+func get_resource_base_type(resource):
+	if resource == null:
+		return "Resource"
 	
-	var type = edited_resource.get_class()
+	var type = resource.get_class()
 	if type == "Resource":
 		# Custom classes return the base type,
 		# so we need to get the script
-		var script_path = edited_resource.get_script().resource_path
+		var script_path = resource.get_script().resource_path
 		var dir = plugin.get_editor_interface()\
 			.get_resource_filesystem()\
 			.get_filesystem_path(script_path.get_base_dir())
@@ -34,26 +38,26 @@ func _ready():
 			type = dir.get_file_script_class_name(index_in_dir)
 
 		if type == "":
-			var source = edited_resource.get_script().source_code
+			var source = resource.get_script().source_code
 			var found_extends = source.find("extends ") + 8
 			type = source.substr(found_extends, source.find("\n", found_extends + 1) - found_extends)
 	
 	var parent = ClassDB.get_parent_class(type)
 	if type == "":
-		base_type = "Resource"
+		return "Resource"
 
 	elif parent in [
 		"Texture", "AudioStream", "PrimitiveMesh",
 		"Shape", "Shape2D", "Script", "StyleBox",
 	]:
-		base_type = parent
+		return parent
 
 	elif ClassDB.is_parent_class(type, "InputEvent"):
 		# Not always a direct child.
-		base_type = "InputEvent"
+		return "InputEvent"
 
 	else:
-		base_type = type
+		return type
 
 
 # TODO: implement saving of selected types to reload them later
@@ -97,13 +101,15 @@ func handle_menu_selected(id):
 	
 	elif id >= 100 && id < get_allowed_types().size() + 100:
 		var new_res = ClassDB.instance(get_allowed_types()[id - 100])
-		edited_resource = new_res
 		emit_signal("resource_changed", new_res)
+		edited_resource = new_res
 
-	else:
-		return true
-		
 	return false
+
+
+func _the_cooler_handle_menu_selected(id):
+	if id == 2:
+		plugin.get_editor_interface().edit_resource(edited_resource)
 
 
 # func get_saved_type():
