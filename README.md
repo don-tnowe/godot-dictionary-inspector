@@ -29,7 +29,7 @@ Made by Don Tnowe in 2022.
 
 [https://redbladegames.netlify.app]()
 
-[don-tnowe.itch.io]()
+[https://don-tnowe.itch.io]()
 
 [https://twitter.com/don_tnowe]()
 
