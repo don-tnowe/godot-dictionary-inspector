@@ -27,10 +27,10 @@ Proposal to integrate this into the engine: https://github.com/godotengine/godot
 
 Made by Don Tnowe in 2022.
 
-[https://redbladegames.netlify.app]()
+[Website](https://redbladegames.netlify.app)
 
-[https://don-tnowe.itch.io]()
+[Itch](https://don-tnowe.itch.io)
 
-[https://twitter.com/don_tnowe]()
+[Twitter](https://twitter.com/don_tnowe)
 
 Copying and Modiication is allowed in accordance to the MIT license, full text is included.
