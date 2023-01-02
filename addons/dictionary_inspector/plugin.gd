@@ -1,10 +1,11 @@
-tool
+@tool
 extends EditorPlugin
 
-var plugin = DictionaryInspectorPlugin.new(self)
+var plugin
 
 
 func _enter_tree():
+	plugin = DictionaryInspectorPlugin.new(self)
 	add_inspector_plugin(plugin)
 
 

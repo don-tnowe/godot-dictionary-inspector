@@ -1,6 +1,18 @@
 class_name DictionaryInspectorPlugin
 extends EditorInspectorPlugin
 
+const supported_types = [
+	TYPE_DICTIONARY,
+#	# Now has type hints, which the plugin does not support
+#	TYPE_ARRAY,
+#	# Not an improvement since the plugin is about fixing Dictionaries
+#	# And Packed Arrays can't have nested collections
+#	TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, TYPE_PACKED_STRING_ARRAY,
+#	TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY,
+#	TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY,
+#	TYPE_PACKED_VECTOR2_ARRAY, TYPE_PACKED_VECTOR3_ARRAY
+]
+
 var plugin
 
 
@@ -8,18 +20,13 @@ func _init(plugin):
 	self.plugin = plugin
 
 
-func can_handle(object):
+func _can_handle(object):
 	return true
 
 
-func parse_property(object, type, path, hint, hint_text, usage):
-	if type in [
-		TYPE_DICTIONARY, TYPE_ARRAY,
-		TYPE_RAW_ARRAY, TYPE_INT_ARRAY, TYPE_REAL_ARRAY, TYPE_STRING_ARRAY,
-		TYPE_VECTOR2_ARRAY, TYPE_VECTOR3_ARRAY, TYPE_COLOR_ARRAY
-	]:
-		add_property_editor(path, DictionaryInspectorProperty.new(object[path], plugin))
-		return true
+func _parse_property(object, type, path, hint, hint_text, usage, wide) -> bool:
+	if !typeof(object[path]) in supported_types:
+		return false
 
-	else:
-			return false
+	add_property_editor(path, DictionaryInspectorProperty.new(object[path], plugin))
+	return true

@@ -1,8 +1,9 @@
-tool
-class_name CustomResourcePicker
+@tool
 extends EditorResourcePicker
 
 const setting_name = "addons/dictionary_inspector/resource_types"
+
+@onready var button = get_child(1)
 
 var plugin
 
@@ -16,7 +17,7 @@ func _init(resource, plugin):
 
 func _ready():
 	base_type = get_resource_base_type(edited_resource)
-	$"PopupMenu".connect("id_pressed", self, "_the_cooler_handle_menu_selected")
+#	button.connect("item_selected", _the_cooler_handle_menu_selected)
 
 
 func get_resource_base_type(resource):
@@ -47,8 +48,8 @@ func get_resource_base_type(resource):
 		return "Resource"
 
 	elif parent in [
-		"Texture", "AudioStream", "PrimitiveMesh",
-		"Shape", "Shape2D", "Script", "StyleBox",
+		"Texture2D", "AudioStream", "PrimitiveMesh",
+		"Shape3D", "Shape2D", "Script", "StyleBox",
 	]:
 		return parent
 
@@ -69,8 +70,8 @@ func set_create_options(menu):
 	var icon
 	var i = 0
 	for x in get_allowed_types():
-		if has_icon(x, "EditorIcons"):
-			icon = get_icon(x, "EditorIcons")
+		if has_theme_icon(x, "EditorIcons"):
+			icon = get_theme_icon(x, "EditorIcons")
 
 		else:
 			icon = null
@@ -79,8 +80,8 @@ func set_create_options(menu):
 		i += 1
 	
 	menu.add_separator()
-	menu.add_icon_item(get_icon("Variant", "EditorIcons"), "Change Collection's Resource type", 90001)
-	menu.add_icon_item(get_icon("Object", "EditorIcons"), "Reset Base Type", 90002)
+	menu.add_icon_item(get_theme_icon("Variant", "EditorIcons"), "Change Collection's Resource type", 90001)
+	menu.add_icon_item(get_theme_icon("Object", "EditorIcons"), "Reset Base Type", 90002)
 	menu.add_separator()
 
 
@@ -92,7 +93,7 @@ func handle_menu_selected(id):
 		var edit = LineEdit.new()
 		add_child(edit)
 		edit.placeholder_text = "Enter class name..."
-		edit.connect("text_entered", self, "_on_classname_submitted", [edit])
+		edit.connect("text_entered", _on_classname_submitted.bind(edit))
 		edit.grab_focus()
 		edit.size_flags_horizontal = SIZE_EXPAND_FILL
 
@@ -100,7 +101,7 @@ func handle_menu_selected(id):
 		_on_classname_submitted("Resource")
 	
 	elif id >= 100 && id < get_allowed_types().size() + 100:
-		var new_res = ClassDB.instance(get_allowed_types()[id - 100])
+		var new_res = ClassDB.instantiate(get_allowed_types()[id - 100])
 		emit_signal("resource_changed", new_res)
 		edited_resource = new_res
 
@@ -125,7 +126,6 @@ func _the_cooler_handle_menu_selected(id):
 
 
 func _on_classname_submitted(new_text, node = null):
-	$"PopupMenu".call_deferred("hide")
 	if is_instance_valid(node):
 		node.queue_free()
 
@@ -144,7 +144,6 @@ func _on_classname_submitted(new_text, node = null):
 	# TODO: allow creation of new resources of changed type
 	# If Base Type is changed, can't create new instances
 	if new_text != "Resource":
-		# $"PopupMenu".selected = 0
 		handle_menu_selected(0)
 
 	# else:

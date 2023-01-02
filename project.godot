@@ -6,92 +6,44 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
+config_version=5
 
-_global_script_classes=[ {
-"base": "PackedArrayPropertyEditor",
-"class": "ArrayPropertyEditor",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/array_property_editor.gd"
-}, {
+_global_script_classes=[{
 "base": "Resource",
-"class": "AverageDictionaryEnjoyer",
-"language": "GDScript",
+"class": &"AverageDictionaryEnjoyer",
+"language": &"GDScript",
 "path": "res://average_dictionary_enjoyer.gd"
 }, {
-"base": "VBoxContainer",
-"class": "BaseCollectionPropertyEditor",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/base_property_editor.gd"
-}, {
 "base": "Button",
-"class": "CollectionHeaderButton",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/collection_header_button.gd"
-}, {
-"base": "EditorResourcePicker",
-"class": "CustomResourcePicker",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/custom_resource_picker.gd"
-}, {
-"base": "PackedArrayPropertyEditor",
-"class": "DictPropertyEditor",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/dict_property_editor.gd"
+"class": &"DictionaryInspectorArrayIndex",
+"language": &"GDScript",
+"path": "res://addons/dictionary_inspector/elements/special_buttons/array_index.gd"
 }, {
 "base": "EditorInspectorPlugin",
-"class": "DictionaryInspectorPlugin",
-"language": "GDScript",
+"class": &"DictionaryInspectorPlugin",
+"language": &"GDScript",
 "path": "res://addons/dictionary_inspector/inspector_plugin.gd"
 }, {
 "base": "EditorProperty",
-"class": "DictionaryInspectorProperty",
-"language": "GDScript",
+"class": &"DictionaryInspectorProperty",
+"language": &"GDScript",
 "path": "res://addons/dictionary_inspector/inspector_property.gd"
 }, {
 "base": "Button",
-"class": "EditorArrayIndex",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/array_index.gd"
-}, {
-"base": "BaseCollectionPropertyEditor",
-"class": "ObjectPropertyEditor",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/object_property_editor.gd"
-}, {
-"base": "BaseCollectionPropertyEditor",
-"class": "PackedArrayPropertyEditor",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/packed_array_property_editor.gd"
-}, {
-"base": "GridContainer",
-"class": "TensorPropertyEditor",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/tensor_property_editor.gd"
-}, {
-"base": "Button",
-"class": "ThemeIconButton",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/editor_icon_button.gd"
+"class": &"ThemeIconButton",
+"language": &"GDScript",
+"path": "res://addons/dictionary_inspector/elements/special_buttons/editor_icon_button.gd"
 }, {
 "base": "OptionButton",
-"class": "TypeOptionButton",
-"language": "GDScript",
-"path": "res://addons/dictionary_inspector/elements/type_option_button.gd"
-} ]
+"class": &"TypeOptionButton",
+"language": &"GDScript",
+"path": "res://addons/dictionary_inspector/elements/special_buttons/type_option_button.gd"
+}]
 _global_script_class_icons={
-"ArrayPropertyEditor": "",
 "AverageDictionaryEnjoyer": "",
-"BaseCollectionPropertyEditor": "",
-"CollectionHeaderButton": "",
-"CustomResourcePicker": "",
-"DictPropertyEditor": "",
+"DictionaryInspectorArrayIndex": "",
 "DictionaryInspectorPlugin": "",
 "DictionaryInspectorProperty": "",
-"EditorArrayIndex": "",
-"ObjectPropertyEditor": "",
-"PackedArrayPropertyEditor": "",
-"TensorPropertyEditor": "",
 "ThemeIconButton": "",
 "TypeOptionButton": ""
 }
@@ -108,11 +60,12 @@ resources_spreadsheet_view/Context_Menu_On_Leftclick=false
 [application]
 
 config/name="Addon: Dictionary Inspector"
+config/features=PackedStringArray("4.0")
 config/icon="res://icon.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/Iconify/plugin.cfg", "res://addons/dictionary_inspector/plugin.cfg" )
+enabled=PackedStringArray("res://addons/dictionary_inspector/plugin.cfg")
 
 [gui]
 

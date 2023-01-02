@@ -1,4 +1,4 @@
-tool
+@tool
 class_name DictionaryInspectorProperty
 extends EditorProperty
 
@@ -12,11 +12,12 @@ func _init(current_value, plugin):
 	self.current_value = current_value
 	self.plugin = plugin
 
-	property_control = CollectionHeaderButton.new(current_value, plugin)
+	property_control = load("res://addons/dictionary_inspector/elements/special_buttons/collection_header_button.gd")\
+		.new(current_value, plugin)
 	add_child(property_control)
 	add_focusable(property_control)
-	property_control.connect("bottom_control_available", self, "_on_bottom_control_available")
-	property_control.connect("value_changed", self, "_on_collection_changed")
+	property_control.connect("bottom_control_available", _on_bottom_control_available)
+	property_control.connect("value_changed", _on_collection_changed)
 
 
 func _on_bottom_control_available(bottom_control):
