@@ -1,10 +1,10 @@
 # Dictionary Inspector.
 
-Exactly what it sounds lke. It edits Dictionaries in the Inspector.
+Exactly what it sounds like. It edits Dictionaries in the Inspector.
 
 ![](./images/gif.gif)
 
-Notable differences from the janky 3.5 inspector:
+Notable differences from the janky 3.5 and 4.X (*but hopefully soon not!!!*) inspector:
 
 - editable keys (*!!!!!!*)
 - adding entries with one button, never forget to click "Add new k/v pair" again!
@@ -27,10 +27,10 @@ Proposal to integrate this into the engine: https://github.com/godotengine/godot
 
 Made by Don Tnowe in 2022.
 
-[https://redbladegames.netlify.app]()
+[My Website](https://redbladegames.netlify.app)
 
-[don-tnowe.itch.io]()
+[My Itch](https://don-tnowe.itch.io)
 
-[https://twitter.com/don_tnowe]()
+[My Twitter](https://twitter.com/don_tnowe)
 
 Copying and Modiication is allowed in accordance to the MIT license, full text is included.
