@@ -13,39 +13,9 @@ _global_script_classes=[{
 "class": &"AverageDictionaryEnjoyer",
 "language": &"GDScript",
 "path": "res://average_dictionary_enjoyer.gd"
-}, {
-"base": "Button",
-"class": &"DictionaryInspectorArrayIndex",
-"language": &"GDScript",
-"path": "res://addons/dictionary_inspector/elements/special_buttons/array_index.gd"
-}, {
-"base": "EditorInspectorPlugin",
-"class": &"DictionaryInspectorPlugin",
-"language": &"GDScript",
-"path": "res://addons/dictionary_inspector/inspector_plugin.gd"
-}, {
-"base": "EditorProperty",
-"class": &"DictionaryInspectorProperty",
-"language": &"GDScript",
-"path": "res://addons/dictionary_inspector/inspector_property.gd"
-}, {
-"base": "Button",
-"class": &"ThemeIconButton",
-"language": &"GDScript",
-"path": "res://addons/dictionary_inspector/elements/special_buttons/editor_icon_button.gd"
-}, {
-"base": "OptionButton",
-"class": &"TypeOptionButton",
-"language": &"GDScript",
-"path": "res://addons/dictionary_inspector/elements/special_buttons/type_option_button.gd"
 }]
 _global_script_class_icons={
-"AverageDictionaryEnjoyer": "",
-"DictionaryInspectorArrayIndex": "",
-"DictionaryInspectorPlugin": "",
-"DictionaryInspectorProperty": "",
-"ThemeIconButton": "",
-"TypeOptionButton": ""
+"AverageDictionaryEnjoyer": ""
 }
 
 [addons]

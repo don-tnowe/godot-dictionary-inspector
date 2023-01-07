@@ -59,7 +59,7 @@ script = ExtResource("1")
 dict1 = {
 true: ["nested, dynamic!", 200.0],
 "key": Color(0.117647, 1, 0.52549, 1),
-Vector2(0.13, 0): ExtResource("3")
+Vector2(0.13, 0): null
 }
 dict2 = {
 "Even supports non-string keys!": Color(0.8, 0.0823529, 0.0823529, 1),
@@ -73,6 +73,8 @@ AABB(0.71, 0.47, 0.67, 1.34, 0.6, 16.5): ["nested array!", ExtResource("2"), 11.
 dict3 = {
 "Enter value...": [0.0, Vector2(0, 0), Color(0, 0, 0, 1), "See? Any type.", ExtResource("3")]
 }
-arr = [{}, null, null, null]
+arr = [{
+0: 0
+}]
 arr2 = PackedStringArray()
 res = SubResource("Resource_jsmc6")

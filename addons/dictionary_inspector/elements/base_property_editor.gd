@@ -3,6 +3,9 @@ extends VBoxContainer
 
 signal value_changed(new_value)
 
+const DictionaryInspectorArrayIndex = preload("res://addons/dictionary_inspector/elements/special_buttons/array_index.gd")
+const TypeOptionButton = preload("res://addons/dictionary_inspector/elements/special_buttons/type_option_button.gd")
+
 var default_per_class = [
 	null,
 	false,

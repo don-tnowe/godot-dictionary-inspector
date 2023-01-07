@@ -1,4 +1,3 @@
-class_name DictionaryInspectorPlugin
 extends EditorInspectorPlugin
 
 const supported_types = [
@@ -28,5 +27,5 @@ func _parse_property(object, type, path, hint, hint_text, usage, wide) -> bool:
 	if !typeof(object[path]) in supported_types:
 		return false
 
-	add_property_editor(path, DictionaryInspectorProperty.new(object[path], plugin))
+	add_property_editor(path, load("res://addons/dictionary_inspector/inspector_property.gd").new(object[path], plugin))
 	return true

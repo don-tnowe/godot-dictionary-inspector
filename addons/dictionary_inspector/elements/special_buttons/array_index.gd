@@ -1,5 +1,4 @@
 @tool
-class_name DictionaryInspectorArrayIndex
 extends Button
 
 signal drop_received(from_container)

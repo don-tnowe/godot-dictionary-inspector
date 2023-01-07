@@ -1,5 +1,4 @@
 @tool
-class_name DictionaryInspectorProperty
 extends EditorProperty
 
 var property_control

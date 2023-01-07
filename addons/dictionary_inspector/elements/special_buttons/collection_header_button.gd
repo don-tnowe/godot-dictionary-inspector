@@ -61,13 +61,13 @@ func _on_pressed():
 		bottom_control.add_theme_stylebox_override("panel", stylebox)
 
 		collection_editor = (
-			preload("res://addons/dictionary_inspector/elements/dict_property_editor.gd")
+			load("res://addons/dictionary_inspector/elements/dict_property_editor.gd")
 			if stored_collection is Dictionary else
-			preload("res://addons/dictionary_inspector/elements/array_property_editor.gd")
+			load("res://addons/dictionary_inspector/elements/array_property_editor.gd")
 			if stored_collection is Array else
-			preload("res://addons/dictionary_inspector/elements/object_property_editor.gd")
+			load("res://addons/dictionary_inspector/elements/object_property_editor.gd")
 			if stored_collection is Object else
-			preload("res://addons/dictionary_inspector/elements/packed_array_property_editor.gd")
+			load("res://addons/dictionary_inspector/elements/packed_array_property_editor.gd")
 		).new()
 
 		collection_editor.parent_stylebox = stylebox
