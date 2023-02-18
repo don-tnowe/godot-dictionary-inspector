@@ -180,10 +180,8 @@ func get_default_for_class(type, is_key = false):
 			new_value.x.x += 1.0
 
 		elif type == TYPE_COLOR:
-			if new_value.s == 0.0:
-				new_value = Color(new_value.r + 0.01, new_value.g, new_value.b)
-
-			new_value = Color.from_hsv(new_value.h + 0.01, new_value.s, new_value.v)
+			new_value = Color(randi())
+			new_value.a = 1.0
 
 	return new_value
 
