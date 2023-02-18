@@ -202,7 +202,7 @@ func get_default_for_type(type, is_key = false):
 			new_value.x.x += 1.0
 
 		elif type == TYPE_COLOR:
-			new_value = new_value.from_hsv(new_value.h + 0.01, new_value.s, new_value.v)
+			new_value = Color(randi(), 1.0)
 
 		elif type == TYPE_OBJECT:
 			return new_value
