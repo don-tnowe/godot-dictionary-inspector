@@ -163,15 +163,27 @@ func get_default_for_class(type, is_key = false):
 
 		elif type == TYPE_STRING || type == TYPE_NODE_PATH:
 			new_value += "2"
-		
+
 		elif type == TYPE_VECTOR2 || type == TYPE_VECTOR3:
 			new_value.x += 1.0
 
-		elif type == TYPE_COLOR:
-			new_value = new_value.from_hsv(new_value.h + 0.01, new_value.s, new_value.v)
+		elif type == TYPE_PLANE || type == TYPE_QUAT:
+			new_value.x += 1.0
 
-		else:
-			return new_value
+		elif type == TYPE_RECT2 || type == TYPE_AABB:
+			new_value.position.x += 1
+
+		elif type == TYPE_TRANSFORM2D || type == TYPE_TRANSFORM:
+			new_value.origin.x += 1.0
+
+		elif type == TYPE_BASIS:
+			new_value.x.x += 1.0
+
+		elif type == TYPE_COLOR:
+			if new_value.s == 0.0:
+				new_value = Color(new_value.r + 0.01, new_value.g, new_value.b)
+
+			new_value = Color.from_hsv(new_value.h + 0.01, new_value.s, new_value.v)
 
 	return new_value
 
