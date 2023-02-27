@@ -3,7 +3,7 @@ extends EditorResourcePicker
 
 const setting_name = "addons/dictionary_inspector/resource_types"
 
-@onready var button = get_child(1)
+@onready var button : Button = get_child(1)
 
 var plugin
 
@@ -17,7 +17,6 @@ func _init(resource, plugin):
 
 func _ready():
 	base_type = get_resource_base_type(edited_resource)
-#	button.connect("item_selected", _the_cooler_handle_menu_selected)
 
 
 func get_resource_base_type(resource):
@@ -66,7 +65,10 @@ func get_resource_base_type(resource):
 #   base_type = get_saved_type()
 
 
-func set_create_options(menu):
+func _set_create_options(menu):
+	if !menu.index_pressed.is_connected(_the_cooler_handle_menu_selected):
+		menu.index_pressed.connect(_the_cooler_handle_menu_selected)
+
 	var icon
 	var i = 0
 	for x in get_allowed_types():
@@ -85,7 +87,7 @@ func set_create_options(menu):
 	menu.add_separator()
 
 
-func handle_menu_selected(id):
+func _handle_menu_selected(id):
 	if id == 90001:
 		for x in get_children():
 			x.hide()
@@ -93,7 +95,7 @@ func handle_menu_selected(id):
 		var edit = LineEdit.new()
 		add_child(edit)
 		edit.placeholder_text = "Enter class name..."
-		edit.connect("text_entered", _on_classname_submitted.bind(edit))
+		edit.text_submitted.connect(_on_classname_submitted.bind(edit))
 		edit.grab_focus()
 		edit.size_flags_horizontal = SIZE_EXPAND_FILL
 
@@ -109,12 +111,14 @@ func handle_menu_selected(id):
 
 
 func _the_cooler_handle_menu_selected(id):
-	if id == 2:
+	if id == 7:
 		if edited_resource is Script:
-			plugin.get_editor_interface().edit_script(edited_resource)
+			plugin.get_editor_interface().edit_script.call_deferred(edited_resource)
 
 		else:
-			plugin.get_editor_interface().edit_resource(edited_resource)
+			plugin.get_editor_interface().edit_resource.call_deferred(edited_resource)
+
+	return false
 
 
 # func get_saved_type():
@@ -144,7 +148,7 @@ func _on_classname_submitted(new_text, node = null):
 	# TODO: allow creation of new resources of changed type
 	# If Base Type is changed, can't create new instances
 	if new_text != "Resource":
-		handle_menu_selected(0)
+		_handle_menu_selected(0)
 
 	# else:
 	# 	get_child(0).grab_focus()
