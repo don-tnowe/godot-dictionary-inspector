@@ -14,6 +14,7 @@ var collection_editor
 var stylebox
 
 
+
 func _init(collection, plugin):
 	stored_collection = collection
 	self.plugin = plugin
@@ -72,9 +73,9 @@ func _on_pressed():
 
 		collection_editor.parent_stylebox = stylebox
 		bottom_control.add_child(collection_editor)
-		collection_editor.connect("value_changed", _on_value_changed)
+		collection_editor.value_changed.connect(_on_value_changed)
 		color_rect.show()
-		emit_signal("bottom_control_available", bottom_control)
+		bottom_control_available.emit(bottom_control)
 
 	else:
 		flat = !flat
@@ -100,7 +101,7 @@ func get_recursion_style():
 
 
 func _on_value_changed(value):
-	if value != null && !value is Object:
+	if value != null and !value is Object:
 		text = "%s (size %s)" % [
 			(
 				"Dictionary" if value is Dictionary else
@@ -110,4 +111,4 @@ func _on_value_changed(value):
 			value.size(),
 		]
 	stored_collection = value
-	emit_signal("value_changed", value)
+	value_changed.emit(value)

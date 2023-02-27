@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=8 format=3 uid="uid://3a3ey1dn0t6g"]
+[gd_resource type="Resource" script_class="AverageDictionaryEnjoyer" load_steps=8 format=3 uid="uid://3a3ey1dn0t6g"]
 
 [ext_resource type="Script" path="res://average_dictionary_enjoyer.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b2bakf0rugby5" path="res://icon.png" id="2"]

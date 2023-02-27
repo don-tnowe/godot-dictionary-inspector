@@ -6,6 +6,47 @@ signal value_changed(new_value)
 const DictionaryInspectorArrayIndex = preload("res://addons/dictionary_inspector/elements/special_buttons/array_index.gd")
 const TypeOptionButton = preload("res://addons/dictionary_inspector/elements/special_buttons/type_option_button.gd")
 
+var type_by_name = {
+	"null" : TYPE_NIL,
+	"bool" : TYPE_BOOL,
+	"int" : TYPE_INT,
+	"float" : TYPE_FLOAT,
+	"String" : TYPE_STRING,
+	"Vector2" : TYPE_VECTOR2,
+	"Vector2i" : TYPE_VECTOR2I,
+	"Rect2" : TYPE_RECT2,
+	"Rect2i" : TYPE_RECT2I,
+	"Vector3" : TYPE_VECTOR3,
+	"Vector3i" : TYPE_VECTOR3I,
+	"Transform2D" : TYPE_TRANSFORM2D,
+	"Vector4" : TYPE_VECTOR4,
+	"Vector4i" : TYPE_VECTOR4I,
+	"Plane" : TYPE_PLANE,
+	"Quaternion" : TYPE_QUATERNION,
+	"AABB" : TYPE_AABB,
+	"Basis" : TYPE_BASIS,
+	"Transform3D" : TYPE_TRANSFORM3D,
+	"Projection" : TYPE_PROJECTION,
+	"Color" : TYPE_COLOR,
+	"StringName" : TYPE_STRING_NAME,
+	"NodePath" : TYPE_NODE_PATH,
+	"RID" : TYPE_RID,
+	"Object" : TYPE_OBJECT,
+	"Callable" : TYPE_CALLABLE,
+	"Signal" : TYPE_SIGNAL,
+	"Dictionary" : TYPE_DICTIONARY,
+	"Array" : TYPE_ARRAY,
+	"PackedByteArray" : TYPE_PACKED_BYTE_ARRAY,
+	"PackedInt32Array" : TYPE_PACKED_INT32_ARRAY,
+	"PackedInt64Array" : TYPE_PACKED_INT64_ARRAY,
+	"PackedFloat32Array" : TYPE_PACKED_FLOAT32_ARRAY,
+	"PackedFloat64Array" : TYPE_PACKED_FLOAT64_ARRAY,
+	"PackedStringArray" : TYPE_PACKED_STRING_ARRAY,
+	"PackedVector2Array" : TYPE_PACKED_VECTOR2_ARRAY,
+	"PackedVector3Array" : TYPE_PACKED_VECTOR3_ARRAY,
+	"PackedColorArray" : TYPE_PACKED_COLOR_ARRAY,
+}
+
 var default_per_class = [
 	null,
 	false,
@@ -52,6 +93,7 @@ var plugin
 var settings
 var parent_stylebox
 
+var init_delete_button
 var init_prop_container
 var last_type_v := TYPE_FLOAT
 
@@ -66,6 +108,10 @@ func display(collection, plugin : EditorPlugin):
 	size_flags_horizontal = SIZE_EXPAND_FILL
 	init_prop_container = HBoxContainer.new()
 	init_prop_container.size_flags_horizontal = SIZE_EXPAND_FILL
+
+	init_delete_button = Button.new()
+	init_delete_button.icon = get_theme_icon("Remove", "EditorIcons")
+	init_delete_button.tooltip_text = "Delete entry"
 
 	add_child(create_add_button())
 	add_all_items(collection)
@@ -149,7 +195,7 @@ func create_item_control_for_type(type, initial_value, container, is_key) -> Con
 			# This big boy will also handle the distinction.
 			var script_file = "res://addons/dictionary_inspector/elements/special_buttons/collection_header_button.gd"
 			result = load(script_file).new(initial_value, plugin)
-			result.connect("bottom_control_available", _on_collection_control_available.bind(result))
+			result.bottom_control_available.connect(container.add_sibling)
 
 		_:
 			result = Label.new()
@@ -160,18 +206,22 @@ func create_item_control_for_type(type, initial_value, container, is_key) -> Con
 	return result
 
 
-func _on_collection_control_available(new_control, created_by_control):
-	var below_node = created_by_control.get_parent()
-	if below_node is EditorResourcePicker:
-		# Object editor buttons get replaced by a Picker and become their child.
-		below_node = below_node.get_parent()
 
-	add_child(new_control)
-	move_child(new_control, below_node.get_index() + 1)
+
+
+func get_type_from_string(type_name : String):
+	if type_by_name.has(type_name):
+		return type_by_name[type_name]
+	elif type_exists(type_name):
+		return TYPE_OBJECT
+	else :
+		return null
+	
 
 
 func get_default_for_type(type, is_key = false):
-	var new_value = default_per_class[type]
+	var type_hint = TYPE_OBJECT if type is String else type
+	var new_value = default_per_class[type_hint]
 	if type == TYPE_DICTIONARY || type == TYPE_ARRAY:
 		return new_value.duplicate()
 
@@ -239,21 +289,24 @@ func connect_control(control, type, container, is_key):
 
 
 func create_type_switcher(type, container, is_key) -> TypeOptionButton:
+	if type == 0 :
+		type = TYPE_OBJECT
 	var result = TypeOptionButton.new()
-	result.call_deferred("_on_item_selected", type)
 	result.get_popup().connect("index_pressed", _on_property_control_type_changed.bind(result, container, is_key))
 
+	result._on_item_selected.call_deferred(type, true)
 	return result
 
 
 func update_variant(key, value, is_rename = false):
+	print(key,value)
 	stored_collection[key] = value
 	emit_signal("value_changed", stored_collection)
 
 
 func get_container_index(container) -> int:
 	var i := 0
-	for x in get_children():
+	for x in get_vbox_recursive_children(self):
 		if x == container:
 			return i
 
@@ -263,9 +316,20 @@ func get_container_index(container) -> int:
 	return -1
 
 
+func get_vbox_recursive_children(vbox :VBoxContainer):
+	var result := []
+	for child in vbox.get_children() : 
+		if child is VBoxContainer:
+			result.append_array(get_vbox_recursive_children(child))
+		else:
+			result.append(child)
+	return result
+
+
 func _on_property_control_value_changed(value, control, container, is_rename = false):
+	print(get_container_index(container))
 	update_variant(get_container_index(container), value, is_rename)
 
 
-func _on_property_control_type_changed(type, control, container, is_key = false):
+func _on_property_control_type_changed(type_index, control, container, is_key = false):
 	pass

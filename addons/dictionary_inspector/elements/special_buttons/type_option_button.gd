@@ -58,7 +58,7 @@ func _ready():
 	fit_to_longest_item = false
 	set_item_text(0, "DELETE ENTRY")
 	_on_item_selected(selected)
-	connect("item_selected", _on_item_selected)
+	item_selected.connect(_on_item_selected)
 
 
 func add_type_icon_item(typename):
@@ -66,6 +66,8 @@ func add_type_icon_item(typename):
 	get_popup().set_item_as_radio_checkable(get_item_count() - 1, false)
 
 
-func _on_item_selected(index):
+func _on_item_selected(index, is_id = false):
+	if is_id : 
+		index = get_item_index(index)
 	icon = get_item_icon(index)
 	text = ""
