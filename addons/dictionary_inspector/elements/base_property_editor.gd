@@ -240,8 +240,8 @@ func connect_control(control, type, container, is_key):
 
 func create_type_switcher(type, container, is_key) -> TypeOptionButton:
 	var result = TypeOptionButton.new()
-	result.call_deferred("_on_item_selected", type)
-	result.get_popup().connect("index_pressed", _on_property_control_type_changed.bind(result, container, is_key))
+	result._on_item_selected.call_deferred(type)
+	result.get_popup().id_pressed.connect(_on_property_control_type_changed.bind(result, container, is_key))
 
 	return result
 
