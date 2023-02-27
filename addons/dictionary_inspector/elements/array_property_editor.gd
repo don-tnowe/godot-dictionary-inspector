@@ -44,7 +44,7 @@ func _on_property_control_type_changed(type, control, container, is_key = false)
 	
 	var value = get_default_for_type(type)
 	var new_editor = create_item_control_for_type(type, value, container, is_key)
-	control.get_parent().get_child(control.get_position_in_parent() + 1).free()
-	control.get_parent().add_child_below_node(control, new_editor)
+	control.get_parent().get_child(control.get_index() + 1).free()
+	control.add_sibling(new_editor)
 	update_variant(key, value, false)
 	last_type_v = type

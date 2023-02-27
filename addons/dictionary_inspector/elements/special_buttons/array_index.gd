@@ -18,7 +18,7 @@ func _init(position):
 
 
 func _get_drag_data(position):
-	var preview = get_parent().duplicate()
+	var preview = get_parent().duplicate(0)
 	set_drag_preview(preview)
 	return {"array_move_from": get_parent()}
 
