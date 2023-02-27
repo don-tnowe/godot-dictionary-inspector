@@ -24,8 +24,10 @@ func _can_handle(object):
 
 
 func _parse_property(object, type, path, hint, hint_text, usage, wide) -> bool:
-	if !typeof(object[path]) in supported_types:
-		return false
+	if object != null:
+		if !typeof(object[path]) in supported_types:
+			return false
 
-	add_property_editor(path, load("res://addons/dictionary_inspector/inspector_property.gd").new(object[path], plugin))
-	return true
+		add_property_editor(path, load("res://addons/dictionary_inspector/inspector_property.gd").new(object[path], plugin))
+		return true
+	return false
