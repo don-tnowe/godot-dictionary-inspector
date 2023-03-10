@@ -55,7 +55,7 @@ func update_variant(key, value, is_rename = false):
 func _on_property_control_type_changed(type, control, container, is_key = false):
 	var key = get_container_index(container)
 	if type == 0:
-		_on_item_deleted(control)
+		_on_item_deleted(container)
 		return
 	
 	var value = get_default_for_type(type)
