@@ -1,6 +1,54 @@
 @tool
 extends Button
 
+# just copy these here for now to have easier access
+const typenames = {
+	&"Remove" : 0,
+	&"bool" : TYPE_BOOL,
+	&"int" : TYPE_INT,
+	&"float" : TYPE_FLOAT,
+	&"String" : TYPE_STRING,
+	&"Vector2" : TYPE_VECTOR2,
+	&"Vector2i" : TYPE_VECTOR2I,
+	&"Rect2" : TYPE_RECT2,
+	&"Rect2i" : TYPE_RECT2I,
+	&"Vector3" : TYPE_VECTOR3,
+	&"Vector3i" : TYPE_VECTOR3I,
+	&"Transform2D" : TYPE_TRANSFORM2D,
+	&"Vector4" : TYPE_VECTOR4,
+	&"Vector4i" : TYPE_VECTOR4I,
+	&"Plane" : TYPE_PLANE,
+	&"Quaternion" : TYPE_QUATERNION,
+	&"AABB" : TYPE_AABB,
+	&"Basis" : TYPE_BASIS,
+	&"Transform3D" : TYPE_TRANSFORM3D,
+	&"Projection" : TYPE_PROJECTION,
+	&"Color" : TYPE_COLOR,
+	&"StringName" : TYPE_STRING_NAME,
+	&"NodePath" : TYPE_NODE_PATH,
+#	&"RID" : TYPE_RID,
+	&"Object" : TYPE_OBJECT,
+#	&"Callable" : TYPE_CALLABLE,
+#	&"Signal" : TYPE_SIGNAL,
+	&"Dictionary" : TYPE_DICTIONARY,
+	&"Array" : TYPE_ARRAY,
+	&"PackedByteArray" : TYPE_PACKED_BYTE_ARRAY,
+	&"PackedInt32Array" : TYPE_PACKED_INT32_ARRAY,
+	&"PackedInt64Array" : TYPE_PACKED_INT64_ARRAY,
+	&"PackedFloat32Array" : TYPE_PACKED_FLOAT32_ARRAY,
+	&"PackedFloat64Array" : TYPE_PACKED_FLOAT64_ARRAY,
+	&"PackedStringArray" : TYPE_PACKED_STRING_ARRAY,
+	&"PackedVector2Array" : TYPE_PACKED_VECTOR2_ARRAY,
+	&"PackedVector3Array" : TYPE_PACKED_VECTOR3_ARRAY,
+	&"PackedColorArray" : TYPE_PACKED_COLOR_ARRAY,
+}
+
+func get_type_dict_index(type):
+	var typekeys = typenames.keys()
+	for i in typekeys:
+		if (typenames[i] == type):
+			return typenames[i]
+
 signal value_changed(new_value)
 signal bottom_control_available(control)
 
@@ -101,12 +149,13 @@ func get_recursion_style():
 
 func _on_value_changed(value):
 	if value != null && !value is Object:
-		text = "%s (size %s)" % [
+		text = "%s (%ssize %s)" % [
 			(
 				"Dictionary" if value is Dictionary else
 				"Array" if value is Array else
 				"PackedArray"
 			),
+			str(typenames.keys()[value.get_typed_builtin()]) + ", " if value is Array && value.is_typed() else "",
 			value.size(),
 		]
 	stored_collection = value

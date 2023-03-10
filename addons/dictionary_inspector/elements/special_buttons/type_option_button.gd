@@ -43,13 +43,29 @@ const typenames = {
 	&"PackedColorArray" : TYPE_PACKED_COLOR_ARRAY,
 }
 
+func get_type_dict_index(type):
+	var typekeys = typenames.keys()
+	for i in typekeys:
+		if (typenames[i] == type):
+			return typenames[i]
+
 @export var custom_icons : Array[Texture] = []
 
+var _type
+
+func _init(type = null):
+	_type = type
 
 func _ready():
 	if custom_icons == null || custom_icons.size() == 0:
+		var i = 0
 		for x in typenames:
 			add_type_icon_item(x)
+			if _type:
+				if typenames[x] != get_type_dict_index(_type):
+					set_item_disabled(i, true)
+				i += 1
+		set_item_disabled(0, false)
 
 	else:
 		for i in custom_icons.size():
@@ -59,7 +75,6 @@ func _ready():
 	set_item_text(0, "DELETE ENTRY")
 	_on_item_selected(selected)
 	connect("item_selected", _on_item_selected)
-
 
 func add_type_icon_item(typename):
 	add_icon_item(get_theme_icon(typename, "EditorIcons"), typename, typenames[typename])

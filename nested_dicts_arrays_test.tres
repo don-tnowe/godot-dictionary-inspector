@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="Test" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="NestedDictsArrays" load_steps=2 format=3 uid="uid://wv18ooliwtma"]
 
-[ext_resource type="Script" path="res://nested_dicts_arrays.gd" id="1_7sc31"]
+[ext_resource type="Script" path="res://nested_dicts_arrays.gd" id="1_4upt5"]
 
 [resource]
-script = ExtResource("1_7sc31")
+script = ExtResource("1_4upt5")
 dict_init_empty = {}
 dict_init_val = {
 "key": "value"
@@ -15,3 +15,5 @@ arr_init_dict_empty = [{}]
 arr_init_dict_val = [{}, {
 "subarr": []
 }]
+typed_arr_init_empty = Array[int]([])
+typed_arr_init_one = Array[int]([0])

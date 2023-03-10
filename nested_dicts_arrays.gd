@@ -8,3 +8,5 @@ extends Resource
 @export var arr_init_string = ["asd"]
 @export var arr_init_dict_empty = [{}]
 @export var arr_init_dict_val = [{},{"subarr":[]}]
+@export var typed_arr_init_empty:Array[int] = []
+@export var typed_arr_init_one:Array[int] = [0]

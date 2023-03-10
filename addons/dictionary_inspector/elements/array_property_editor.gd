@@ -25,6 +25,11 @@ func drop_data(position, data):
 		_on_add_button_pressed()
 		update_variant(stored_collection.size() - 1, load(x), false)
 
+func clone_array_type(array, source):
+	var type = source.get_typed_builtin()
+	var class_n = source.get_typed_class_name()
+	var script = source.get_typed_script()
+	return Array(array, type, class_n, script)
 
 func create_item_container(index_in_collection):
 	if !stored_collection.is_empty():
@@ -39,27 +44,48 @@ func create_item_container(index_in_collection):
 
 func update_variant(key, value, is_rename = false):
 	# workaround for arrays apparently being readonly to EditorPlugins
+	var is_typed = stored_collection.is_typed()
 	if stored_collection.is_read_only():
-		# if empty, "need" to set first index like so
+		var arr = []
 		if stored_collection.is_empty():
-			stored_collection = [ value ]
+			arr = [ value ] # create first entry like so, because apparently cant access with index on empty array
 		else:
-			var arr = []
 			arr = [] + stored_collection
 			arr[key] = value
-			stored_collection = [] + arr
+		if is_typed:
+			stored_collection = clone_array_type(arr, stored_collection)
+		else:
+			stored_collection = arr
 	else:
-		stored_collection[key] = value
+		if (is_typed):
+			var arr_t = stored_collection.get_typed_builtin()
+			if typeof(value) != arr_t:
+				# try to cast the value to the array type
+				# needed because Slider inherited controls have value as float,
+				# so otherwise typed arrays dont like it, like trying to enter float to int array
+				# AFAIK the value is still assigned and cast automatically but engine complains if a incompatible value is inserted via GUI
+				# (should work usually, as changing type is disabled for typed arrays
+				# can fail if somehow user inserts value that cannot be cast.)
+				stored_collection[key] = cast_to(value, arr_t)
+		else:
+			stored_collection[key] = value
 	emit_signal("value_changed", stored_collection)
 
 func _on_property_control_type_changed(type, control, container, is_key = false):
 	var key = get_container_index(container)
-	if type == 0:
-		_on_item_deleted(container)
-		return
+	# check just in case, even if have removed all other items in the menu
+	if stored_collection.is_typed() && type != 0:
+		type = stored_collection.get_typed_builtin()
+		var i = control.get_type_dict_index(type)
+		print("This is a typed Array of type ", control.typenames.keys()[i], " only!")
+		control.select(i)
+		control.text = ""
+	else:
+		if type == 0:
+			_on_item_deleted(container)
+			return
 	
 	var value = get_default_for_type(type)
-	print(type)
 	var new_editor = create_item_control_for_type(type, value, container, is_key)
 	control.get_parent().get_child(control.get_index() + 1).free()
 	control.add_sibling(new_editor)
