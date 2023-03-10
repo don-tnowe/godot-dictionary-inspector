@@ -44,6 +44,7 @@ func create_item_container(index_in_collection):
 
 func update_variant(key, value, is_rename = false):
 	# workaround for arrays apparently being readonly to EditorPlugins
+	# basically just reassign the collection back and forth
 	var is_typed = stored_collection.is_typed()
 	if stored_collection.is_read_only():
 		var arr = []
@@ -51,7 +52,14 @@ func update_variant(key, value, is_rename = false):
 			arr = [ value ] # create first entry like so, because apparently cant access with index on empty array
 		else:
 			arr = [] + stored_collection
-			arr.append(value)
+			# fix index number on arrays
+			# bit of a hack because for some reason arrays set one too small key index, but correct key index if they have dictionaires as members
+			# (that is because when array of dictionaries is opened via the btn, it calls this function, and sets the correct index that way)
+			# so if dictionary member, the array key index is correct, so rather just set the index instead of appending
+			if typeof(value) == TYPE_DICTIONARY: # assuming other types are not problematic, if so, look at the index value calc first imo.
+				arr[key] = value
+			else:
+				arr.append(value)
 		if is_typed:
 			stored_collection = clone_array_type(arr, stored_collection)
 		else:
