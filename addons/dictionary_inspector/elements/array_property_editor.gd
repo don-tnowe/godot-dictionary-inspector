@@ -39,12 +39,15 @@ func create_item_container(index_in_collection):
 
 func update_variant(key, value, is_rename = false):
 	# workaround for arrays apparently being readonly to EditorPlugins
-	# basically just reassign the collection back and forth
 	if stored_collection.is_read_only():
-		var arr = []
-		arr = [] + stored_collection
-		arr[key] = value
-		stored_collection = [] + arr
+		# if empty, "need" to set first index like so
+		if stored_collection.is_empty():
+			stored_collection = [ value ]
+		else:
+			var arr = []
+			arr = [] + stored_collection
+			arr[key] = value
+			stored_collection = [] + arr
 	else:
 		stored_collection[key] = value
 	emit_signal("value_changed", stored_collection)
