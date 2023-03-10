@@ -51,7 +51,7 @@ func update_variant(key, value, is_rename = false):
 			arr = [ value ] # create first entry like so, because apparently cant access with index on empty array
 		else:
 			arr = [] + stored_collection
-			arr[key] = value
+			arr.append(value)
 		if is_typed:
 			stored_collection = clone_array_type(arr, stored_collection)
 		else:
