@@ -84,6 +84,8 @@ func add_all_items(collection):
 	if !collection.is_empty():
 		for x in collection:
 			add_child(create_item_container(x))
+	else:
+		add_child(create_item_container(0))
 
 
 func create_item_container(k):
