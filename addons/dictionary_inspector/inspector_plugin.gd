@@ -3,7 +3,7 @@ extends EditorInspectorPlugin
 const supported_types = [
 	TYPE_DICTIONARY,
 #	# Now has type hints, which the plugin does not support
-#	TYPE_ARRAY,
+	TYPE_ARRAY
 #	# Not an improvement since the plugin is about fixing Dictionaries
 #	# And Packed Arrays can't have nested collections
 #	TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, TYPE_PACKED_STRING_ARRAY,

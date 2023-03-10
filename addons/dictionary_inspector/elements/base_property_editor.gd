@@ -81,8 +81,9 @@ func create_add_button():
 
 
 func add_all_items(collection):
-	for x in collection:
-		add_child(create_item_container(x))
+	if !collection.is_empty():
+		for x in collection:
+			add_child(create_item_container(x))
 
 
 func create_item_container(k):

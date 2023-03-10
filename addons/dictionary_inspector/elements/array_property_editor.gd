@@ -5,9 +5,10 @@ var header_node
 
 
 func add_all_items(collection):
-	last_type_v = typeof(collection[-1])
-	for i in collection.size():
-		add_child(create_item_container(i))
+	if !collection.is_empty():
+		last_type_v = typeof(collection[-1])
+		for i in collection.size():
+			add_child(create_item_container(i))
 
 
 func can_drop_data(position, data):
@@ -26,15 +27,27 @@ func drop_data(position, data):
 
 
 func create_item_container(index_in_collection):
-	var c = init_prop_container.duplicate()
-	var index = DictionaryInspectorArrayIndex.new(index_in_collection)
-	index.connect("drop_received", _on_item_moved.bind(c))
-	c.add_child(index)
-	c.add_child(create_type_switcher(typeof(stored_collection[index_in_collection]), c, false))
-	c.add_child(create_item_control_for_type(typeof(stored_collection[index_in_collection]), stored_collection[index_in_collection], c, false))
+	if !stored_collection.is_empty():
+		var c = init_prop_container.duplicate()
+		var index = DictionaryInspectorArrayIndex.new(index_in_collection)
+		index.connect("drop_received", _on_item_moved.bind(c))
+		c.add_child(index)
+		c.add_child(create_type_switcher(typeof(stored_collection[index_in_collection]), c, false))
+		c.add_child(create_item_control_for_type(typeof(stored_collection[index_in_collection]), stored_collection[index_in_collection], c, false))
 
-	return c
+		return c
 
+func update_variant(key, value, is_rename = false):
+	# workaround for arrays apparently being readonly to EditorPlugins
+	# basically just reassign the collection back and forth
+	if stored_collection.is_read_only():
+		var arr = []
+		arr = [] + stored_collection
+		arr[key] = value
+		stored_collection = [] + arr
+	else:
+		stored_collection[key] = value
+	emit_signal("value_changed", stored_collection)
 
 func _on_property_control_type_changed(type, control, container, is_key = false):
 	var key = get_container_index(container)
