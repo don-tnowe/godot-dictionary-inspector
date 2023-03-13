@@ -14,6 +14,11 @@ const array_to_element_type = {
 	TYPE_PACKED_COLOR_ARRAY : TYPE_COLOR,
 }
 
+func get_array_type(arr):
+	if typeof(arr) == TYPE_ARRAY && arr.is_typed():
+		return arr.get_typed_builtin()
+	else:
+		return last_type_v
 
 func add_all_items(collection):
 	last_type_v = array_to_element_type.get(typeof(collection), TYPE_FLOAT)
@@ -43,11 +48,7 @@ func create_item_container(index_in_collection):
 	c.add_child(DictionaryInspectorArrayIndex.new(index_in_collection))
 	c.get_child(0).connect("drop_received", _on_item_moved.bind(c), CONNECT_DEFERRED)
 
-	var type
-	if  typeof(stored_collection) == TYPE_ARRAY && stored_collection.is_typed():
-		type = stored_collection.get_typed_builtin()
-	else:
-		type = last_type_v
+	var type = get_array_type(stored_collection)
 	c.add_child(create_item_control_for_type(type, stored_collection[index_in_collection], c, false))
 
 	var delete_button = Button.new()
@@ -59,11 +60,7 @@ func create_item_container(index_in_collection):
 
 
 func _on_add_button_pressed():
-	var type
-	if typeof(stored_collection) == TYPE_ARRAY && stored_collection.is_typed():
-		type = stored_collection.get_typed_builtin()
-	else:
-		type = last_type_v
+	var type = get_array_type(stored_collection)
 	var new_value = get_default_for_type(type)
 	if stored_collection.size() > 0 && (
 		last_type_v == TYPE_OBJECT || stored_collection[-1] is Object
