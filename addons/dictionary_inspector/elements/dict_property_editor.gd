@@ -94,6 +94,8 @@ func update_variant(key, value, is_rename = false):
 	else:
 		if stored_collection.is_read_only():
 			stored_collection = workaround_dict_read_only(stored_collection, key, value)
+		else:
+			stored_collection[key] = value
 
 	emit_signal("value_changed", stored_collection)
 
