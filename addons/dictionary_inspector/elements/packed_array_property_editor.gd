@@ -41,10 +41,10 @@ func create_add_button():
 func create_item_container(index_in_collection):
 	var c = init_prop_container.duplicate()
 	c.add_child(DictionaryInspectorArrayIndex.new(index_in_collection))
-	c.get_child(0).connect("drop_received", _on_item_moved.bind(c))
+	c.get_child(0).connect("drop_received", _on_item_moved.bind(c), CONNECT_DEFERRED)
 
 	var type
-	if stored_collection.is_typed():
+	if  typeof(stored_collection) == TYPE_ARRAY && stored_collection.is_typed():
 		type = stored_collection.get_typed_builtin()
 	else:
 		type = last_type_v
@@ -52,7 +52,7 @@ func create_item_container(index_in_collection):
 
 	var delete_button = Button.new()
 	delete_button.icon = get_theme_icon("Remove", "EditorIcons")
-	delete_button.connect("pressed", _on_item_deleted.bind(c))
+	delete_button.connect("pressed", _on_item_deleted.bind(c), CONNECT_DEFERRED)
 	c.add_child(delete_button)
 
 	return c
@@ -60,7 +60,7 @@ func create_item_container(index_in_collection):
 
 func _on_add_button_pressed():
 	var type
-	if stored_collection.is_typed():
+	if typeof(stored_collection) == TYPE_ARRAY && stored_collection.is_typed():
 		type = stored_collection.get_typed_builtin()
 	else:
 		type = last_type_v
