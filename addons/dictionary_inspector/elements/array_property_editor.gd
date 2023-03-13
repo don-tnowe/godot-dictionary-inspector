@@ -25,12 +25,6 @@ func drop_data(position, data):
 		_on_add_button_pressed()
 		update_variant(stored_collection.size() - 1, load(x), false)
 
-func clone_array_type(array, source):
-	var type = source.get_typed_builtin()
-	var class_n = source.get_typed_class_name()
-	var script = source.get_typed_script()
-	return Array(array, type, class_n, script)
-
 func create_item_container(index_in_collection):
 	if !stored_collection.is_empty():
 		var c = init_prop_container.duplicate()
@@ -54,10 +48,7 @@ func update_variant(key, value, is_rename = false):
 			arr[key] = value
 		else:
 			arr.append(value)
-		if is_typed:
-			stored_collection = clone_array_type(arr, stored_collection)
-		else:
-			stored_collection = arr
+		stored_collection = arr if !is_typed else Array(arr, stored_collection.get_typed_builtin(), stored_collection.get_typed_class_name(), stored_collection.get_typed_script())
 	else:
 		if (is_typed):
 			var arr_t = stored_collection.get_typed_builtin()
