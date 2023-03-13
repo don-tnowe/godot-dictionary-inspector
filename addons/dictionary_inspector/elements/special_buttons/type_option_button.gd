@@ -44,10 +44,12 @@ const typenames = {
 }
 
 func get_type_dict_index(type):
+	var i = 0
 	var typekeys = typenames.keys()
-	for i in typekeys:
-		if (typenames[i] == type):
-			return typenames[i]
+	for key in typekeys:
+		if (typenames[key] == type):
+			return i
+		i += 1
 
 @export var custom_icons : Array[Texture] = []
 
@@ -62,7 +64,7 @@ func _ready():
 		for x in typenames:
 			add_type_icon_item(x)
 			if _type:
-				if typenames[x] != get_type_dict_index(_type):
+				if typenames[x] != _type:
 					set_item_disabled(i, true)
 				i += 1
 		set_item_disabled(0, false)

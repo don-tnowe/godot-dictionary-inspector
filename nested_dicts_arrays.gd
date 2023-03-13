@@ -9,4 +9,4 @@ extends Resource
 @export var arr_init_dict_empty = [{}]
 @export var arr_init_dict_val = [{},{"subarr":[]},0,"string"]
 @export var typed_arr_init_empty:Array[int] = []
-@export var typed_arr_init_one:Array[int] = [0]
+@export var typed_arr_init_dict:Array[Dictionary] = []

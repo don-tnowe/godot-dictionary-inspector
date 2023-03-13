@@ -287,7 +287,7 @@ func create_type_switcher(type, container, is_key) -> TypeOptionButton:
 		result = TypeOptionButton.new(stored_collection.get_typed_builtin())
 	else:
 		result = TypeOptionButton.new()
-	result.call_deferred("_on_item_selected", type)
+	result.call_deferred("_on_item_selected", result.get_type_dict_index(type))
 	result.get_popup().connect("index_pressed", _on_property_control_type_changed_parse_type.bind(result, container, is_key), CONNECT_DEFERRED)
 
 	return result

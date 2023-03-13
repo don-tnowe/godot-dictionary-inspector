@@ -44,10 +44,12 @@ const typenames = {
 }
 
 func get_type_dict_index(type):
+	var i = 0
 	var typekeys = typenames.keys()
-	for i in typekeys:
-		if (typenames[i] == type):
-			return typenames[i]
+	for key in typekeys:
+		if (typenames[key] == type):
+			return i
+		i += 1
 
 signal value_changed(new_value)
 signal bottom_control_available(control)
@@ -155,7 +157,7 @@ func _on_value_changed(value):
 				"Array" if value is Array else
 				"PackedArray"
 			),
-			str(typenames.keys()[value.get_typed_builtin()]) + ", " if value is Array && value.is_typed() else "",
+			str(typenames.keys()[get_type_dict_index(value.get_typed_builtin())]) + ", " if value is Array && value.is_typed() else "",
 			value.size(),
 		]
 	stored_collection = value
