@@ -43,23 +43,17 @@ func create_item_container(index_in_collection):
 		return c
 
 func update_variant(key, value, is_rename = false):
-	# workaround for arrays apparently being readonly to EditorPlugins
-	# basically just reassign the collection back and forth
 	var is_typed = stored_collection.is_typed()
+	# workaround for arrays apparently sometimes being readonly to EditorPlugins
+	# basically just reassign the collection back and forth
 	if stored_collection.is_read_only():
-		var arr = []
-		if stored_collection.is_empty():
-			arr = [ value ] # create first entry like so, because apparently cant access with index on empty array
+		var arr = [] + stored_collection
+		# for some reason arrays set one too small key index, but correct key index if value is dictionary
+		# so if dictionary member, the array key index is correct, so rather just set the index instead of appending
+		if typeof(value) == TYPE_DICTIONARY:
+			arr[key] = value
 		else:
-			arr = [] + stored_collection
-			# fix index number on arrays
-			# bit of a hack because for some reason arrays set one too small key index, but correct key index if they have dictionaires as members
-			# (that is because when array of dictionaries is opened via the btn, it calls this function, and sets the correct index that way)
-			# so if dictionary member, the array key index is correct, so rather just set the index instead of appending
-			if typeof(value) == TYPE_DICTIONARY: # assuming other types are not problematic, if so, look at the index value calc first imo.
-				arr[key] = value
-			else:
-				arr.append(value)
+			arr.append(value)
 		if is_typed:
 			stored_collection = clone_array_type(arr, stored_collection)
 		else:
@@ -69,11 +63,8 @@ func update_variant(key, value, is_rename = false):
 			var arr_t = stored_collection.get_typed_builtin()
 			if typeof(value) != arr_t:
 				# try to cast the value to the array type
-				# needed because Slider inherited controls have value as float,
-				# so otherwise typed arrays dont like it, like trying to enter float to int array
-				# AFAIK the value is still assigned and cast automatically but engine complains if a incompatible value is inserted via GUI
-				# (should work usually, as changing type is disabled for typed arrays
-				# can fail if somehow user inserts value that cannot be cast.)
+				# needed when assigning to typed arrays, because for example Slider inherited controls 
+				# have value as float and engine prints error (the value seems to be still inserted and automatically cast to type of array)
 				stored_collection[key] = cast_to(value, arr_t)
 		else:
 			stored_collection[key] = value
@@ -81,7 +72,7 @@ func update_variant(key, value, is_rename = false):
 
 func _on_property_control_type_changed(type, control, container, is_key = false):
 	var key = get_container_index(container)
-	# check just in case, even if have removed all other items in the menu
+	# check type just in case, even if have deactivated all other items in the menu
 	if stored_collection.is_typed() && type != 0:
 		type = stored_collection.get_typed_builtin()
 		var i = control.get_type_dict_index(type)

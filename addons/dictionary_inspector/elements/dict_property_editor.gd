@@ -70,7 +70,7 @@ func toggle_property_editable(container):
 		children[3].queue_free()
 		children[5].queue_free()
 
-# workaround for dicts apparently being readonly to EditorPlugins
+# workaround for dicts apparently sometimes being readonly to EditorPlugins
 # basically just reassign the collection back and forth
 func workaround_dict_read_only(dict, key, value):
 	var coll = {}
