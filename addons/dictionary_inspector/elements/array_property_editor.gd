@@ -56,7 +56,7 @@ func update_variant(key, value, is_rename = false):
 				# try to cast the value to the array type
 				# needed when assigning to typed arrays, because for example Slider inherited controls 
 				# have value as float and engine prints error (the value seems to be still inserted and automatically cast to type of array)
-				stored_collection[key] = cast_to(value, arr_t)
+				stored_collection[key] = convert(value, arr_t)
 		else:
 			stored_collection[key] = value
 	emit_signal("value_changed", stored_collection)

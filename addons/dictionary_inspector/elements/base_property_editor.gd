@@ -1,46 +1,6 @@
 @tool
 extends VBoxContainer
 
-func cast_to(x, type:Variant.Type):
-	match type:
-		TYPE_BOOL: return x as bool
-		TYPE_INT: return x as int
-		TYPE_FLOAT: return x as float
-		TYPE_STRING: return x as String
-		TYPE_VECTOR2: return x as Vector2
-		TYPE_VECTOR2I: return x as Vector2i
-		TYPE_RECT2: return x as Rect2
-		TYPE_RECT2I: return x as Rect2i
-		TYPE_VECTOR3: return x as Vector3
-		TYPE_VECTOR3I: return x as Vector3i
-		TYPE_TRANSFORM2D: return x as Transform2D
-		TYPE_VECTOR4: return x as Vector4
-		TYPE_VECTOR4I: return x as Vector4i
-		TYPE_PLANE: return x as Plane
-		TYPE_QUATERNION: return x as Quaternion
-		TYPE_AABB: return x as AABB
-		TYPE_BASIS: return x as Basis
-		TYPE_TRANSFORM3D: return x as Transform3D
-		TYPE_PROJECTION: return x as Projection
-		TYPE_COLOR: return x as Color
-		TYPE_STRING_NAME: return x as StringName
-		TYPE_NODE_PATH: return x as NodePath
-		TYPE_RID: return x as RID
-		TYPE_OBJECT: return x as Object
-		TYPE_CALLABLE: return x as Callable
-		TYPE_SIGNAL: return x as Signal
-		TYPE_DICTIONARY: return x as Dictionary
-		TYPE_ARRAY: return x as Array
-		TYPE_PACKED_BYTE_ARRAY: return x as PackedByteArray
-		TYPE_PACKED_INT32_ARRAY: return x as PackedInt32Array
-		TYPE_PACKED_INT64_ARRAY: return x as PackedInt64Array
-		TYPE_PACKED_FLOAT32_ARRAY: return x as PackedFloat32Array
-		TYPE_PACKED_FLOAT64_ARRAY: return x as PackedFloat64Array
-		TYPE_PACKED_STRING_ARRAY: return x as PackedStringArray
-		TYPE_PACKED_VECTOR2_ARRAY: return x as PackedVector2Array
-		TYPE_PACKED_VECTOR3_ARRAY: return x as PackedVector3Array
-		TYPE_PACKED_COLOR_ARRAY: return x as PackedColorArray
-
 signal value_changed(new_value)
 
 const DictionaryInspectorArrayIndex = preload("res://addons/dictionary_inspector/elements/special_buttons/array_index.gd")
