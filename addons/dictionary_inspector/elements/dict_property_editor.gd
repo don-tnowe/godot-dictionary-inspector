@@ -70,14 +70,6 @@ func toggle_property_editable(container):
 		children[3].queue_free()
 		children[5].queue_free()
 
-# workaround for dicts apparently sometimes being readonly to EditorPlugins
-# basically just reassign the collection back and forth
-func workaround_dict_read_only(dict, key, value):
-	var coll = {}
-	coll.merge(dict)
-	coll[key] = value
-	return coll
-
 func update_variant(key, value, is_rename = false):
 	if is_rename:
 		if (typeof(value) != typeof(key) || value != key):
@@ -92,9 +84,6 @@ func update_variant(key, value, is_rename = false):
 			keys_by_index = stored_collection.keys()
 
 	else:
-		if stored_collection.is_read_only():
-			stored_collection = workaround_dict_read_only(stored_collection, key, value)
-		else:
 			stored_collection[key] = value
 
 	emit_signal("value_changed", stored_collection)
@@ -107,8 +96,8 @@ func _on_add_button_pressed():
 	var new_key = get_default_for_type(last_type_k, true)
 	var new_value = get_default_for_type(last_type_v)
 
-	if stored_collection.is_read_only():
-		stored_collection = workaround_dict_read_only(stored_collection, new_key, new_value)
+	if stored_collection.is_empty():
+		stored_collection = { new_key: new_value }
 	else:
 		stored_collection[new_key] = new_value
 	keys_by_index = stored_collection.keys()
