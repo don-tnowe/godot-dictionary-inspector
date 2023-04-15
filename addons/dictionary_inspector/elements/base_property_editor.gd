@@ -81,8 +81,11 @@ func create_add_button():
 
 
 func add_all_items(collection):
-	for x in collection:
-		add_child(create_item_container(x))
+	if !collection.is_empty():
+		for x in collection:
+			add_child(create_item_container(x))
+	else:
+		add_child(create_item_container(0))
 
 
 func create_item_container(k):
@@ -142,7 +145,7 @@ func create_item_control_for_type(type, initial_value, container, is_key) -> Con
 
 		TYPE_OBJECT, TYPE_NIL,\
 		TYPE_DICTIONARY, TYPE_ARRAY,\
-		TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY,\
+		TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, TYPE_PACKED_STRING_ARRAY,\
 		TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY,\
 		TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY,\
 		TYPE_PACKED_VECTOR2_ARRAY, TYPE_PACKED_VECTOR3_ARRAY:
@@ -239,9 +242,15 @@ func connect_control(control, type, container, is_key):
 
 
 func create_type_switcher(type, container, is_key) -> TypeOptionButton:
-	var result = TypeOptionButton.new()
+	var result
+	if typeof(stored_collection) == TYPE_ARRAY && stored_collection.is_typed():
+		result = TypeOptionButton.new(stored_collection.get_typed_builtin())
+	else:
+		result = TypeOptionButton.new()
+
 	result._on_item_selected.call_deferred(type)
-	result.get_popup().id_pressed.connect(_on_property_control_type_changed.bind(result, container, is_key))
+	result.call_deferred("_on_item_selected", result.get_type_dict_index(type))
+	result.get_popup().connect("index_pressed", _on_property_control_type_changed_parse_type.bind(result, container, is_key), CONNECT_DEFERRED)
 
 	return result
 
@@ -269,3 +278,8 @@ func _on_property_control_value_changed(value, control, container, is_rename = f
 
 func _on_property_control_type_changed(type, control, container, is_key = false):
 	pass
+
+func _on_property_control_type_changed_parse_type(type, control, container, is_key = false):
+	var typenames = control.typenames
+	type = typenames[typenames.keys()[type]]
+	_on_property_control_type_changed(type, control, container, is_key)

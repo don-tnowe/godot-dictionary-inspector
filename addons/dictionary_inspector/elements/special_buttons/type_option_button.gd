@@ -4,52 +4,70 @@ extends OptionButton
 
 const typenames = {
 	&"Remove" : 0,
-	&"bool" : 1,
-	&"int" : 2,
-	&"float" : 3,
-	&"String" : 4,
-	&"Vector2" : 5,
-	&"Vector2i" : 6,
-	&"Rect2" : 7,
-	&"Rect2i" : 8,
-	&"Vector3" : 9,
-	&"Vector3i" : 10,
-	&"Transform2D" : 11,
-	&"Vector4" : 12,
-	&"Vector4i" : 13,
-	&"Plane" : 14,
-	&"Quaternion" : 15,
-	&"AABB" : 16,
-	&"Basis" : 17,
-	&"Transform3D" : 18,
-	&"Projection" : 19,
-	&"Color" : 20,
-	&"StringName" : 21,
-	&"NodePath" : 22,
-	# &"---​" : 23,
-	&"Object" : 24,
-	# &"---​​" : 25,
-	# &"---​​​" : 26,
-	&"Dictionary" : 27,
-	&"Array" : 28,
-	&"PackedByteArray" : 29,
-	&"PackedInt32Array" : 30,
-	&"PackedInt64Array" : 31,
-	&"PackedFloat32Array" : 32,
-	&"PackedFloat64Array" : 33,
-	&"PackedStringArray" : 34,
-	&"PackedVector2Array" : 35,
-	&"PackedVector3Array" : 36,
-	&"PackedColorArray" : 37,
+	&"bool" : TYPE_BOOL,
+	&"int" : TYPE_INT,
+	&"float" : TYPE_FLOAT,
+	&"String" : TYPE_STRING,
+	&"Vector2" : TYPE_VECTOR2,
+	&"Vector2i" : TYPE_VECTOR2I,
+	&"Rect2" : TYPE_RECT2,
+	&"Rect2i" : TYPE_RECT2I,
+	&"Vector3" : TYPE_VECTOR3,
+	&"Vector3i" : TYPE_VECTOR3I,
+	&"Transform2D" : TYPE_TRANSFORM2D,
+	&"Vector4" : TYPE_VECTOR4,
+	&"Vector4i" : TYPE_VECTOR4I,
+	&"Plane" : TYPE_PLANE,
+	&"Quaternion" : TYPE_QUATERNION,
+	&"AABB" : TYPE_AABB,
+	&"Basis" : TYPE_BASIS,
+	&"Transform3D" : TYPE_TRANSFORM3D,
+	&"Projection" : TYPE_PROJECTION,
+	&"Color" : TYPE_COLOR,
+	&"StringName" : TYPE_STRING_NAME,
+	&"NodePath" : TYPE_NODE_PATH,
+#	&"RID" : TYPE_RID,
+	&"Object" : TYPE_OBJECT,
+#	&"Callable" : TYPE_CALLABLE,
+#	&"Signal" : TYPE_SIGNAL,
+	&"Dictionary" : TYPE_DICTIONARY,
+	&"Array" : TYPE_ARRAY,
+	&"PackedByteArray" : TYPE_PACKED_BYTE_ARRAY,
+	&"PackedInt32Array" : TYPE_PACKED_INT32_ARRAY,
+	&"PackedInt64Array" : TYPE_PACKED_INT64_ARRAY,
+	&"PackedFloat32Array" : TYPE_PACKED_FLOAT32_ARRAY,
+	&"PackedFloat64Array" : TYPE_PACKED_FLOAT64_ARRAY,
+	&"PackedStringArray" : TYPE_PACKED_STRING_ARRAY,
+	&"PackedVector2Array" : TYPE_PACKED_VECTOR2_ARRAY,
+	&"PackedVector3Array" : TYPE_PACKED_VECTOR3_ARRAY,
+	&"PackedColorArray" : TYPE_PACKED_COLOR_ARRAY,
 }
+
+func get_type_dict_index(type):
+	var i = 0
+	var typekeys = typenames.keys()
+	for key in typekeys:
+		if (typenames[key] == type):
+			return i
+		i += 1
 
 @export var custom_icons : Array[Texture] = []
 
+var _type
+
+func _init(type = null):
+	_type = type
 
 func _ready():
 	if custom_icons == null || custom_icons.size() == 0:
+		var i = 0
 		for x in typenames:
 			add_type_icon_item(x)
+			if _type:
+				if typenames[x] != _type:
+					set_item_disabled(i, true)
+				i += 1
+		set_item_disabled(0, false)
 
 	else:
 		for i in custom_icons.size():
@@ -60,7 +78,6 @@ func _ready():
 	_on_item_selected(selected)
 	# connect("item_selected", _on_item_selected)
 	get_popup().id_pressed.connect(_on_item_selected)
-
 
 func add_type_icon_item(typename):
 	var icon = null

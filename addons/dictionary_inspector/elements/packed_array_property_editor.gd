@@ -14,6 +14,11 @@ const array_to_element_type = {
 	TYPE_PACKED_COLOR_ARRAY : TYPE_COLOR,
 }
 
+func get_array_type(arr):
+	if typeof(arr) == TYPE_ARRAY && arr.is_typed():
+		return arr.get_typed_builtin()
+	else:
+		return last_type_v
 
 func add_all_items(collection):
 	last_type_v = array_to_element_type.get(typeof(collection), TYPE_FLOAT)
@@ -41,19 +46,22 @@ func create_add_button():
 func create_item_container(index_in_collection):
 	var c = init_prop_container.duplicate()
 	c.add_child(DictionaryInspectorArrayIndex.new(index_in_collection))
-	c.get_child(0).connect("drop_received", _on_item_moved.bind(c))
-	c.add_child(create_item_control_for_type(last_type_v, stored_collection[index_in_collection], c, false))
+	c.get_child(0).connect("drop_received", _on_item_moved.bind(c), CONNECT_DEFERRED)
+
+	var type = get_array_type(stored_collection)
+	c.add_child(create_item_control_for_type(type, stored_collection[index_in_collection], c, false))
 
 	var delete_button = Button.new()
 	delete_button.icon = get_theme_icon("Remove", "EditorIcons")
-	delete_button.connect("pressed", _on_item_deleted.bind(c))
+	delete_button.connect("pressed", _on_item_deleted.bind(c), CONNECT_DEFERRED)
 	c.add_child(delete_button)
 
 	return c
 
 
 func _on_add_button_pressed():
-	var new_value = get_default_for_type(last_type_v)
+	var type = get_array_type(stored_collection)
+	var new_value = get_default_for_type(type)
 	if stored_collection.size() > 0 && (
 		last_type_v == TYPE_OBJECT || stored_collection[-1] is Object
 	):

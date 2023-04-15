@@ -70,7 +70,6 @@ func toggle_property_editable(container):
 		children[3].queue_free()
 		children[5].queue_free()
 
-
 func update_variant(key, value, is_rename = false):
 	if is_rename:
 		if (typeof(value) != typeof(key) || value != key):
@@ -85,7 +84,7 @@ func update_variant(key, value, is_rename = false):
 			keys_by_index = stored_collection.keys()
 
 	else:
-		stored_collection[key] = value
+			stored_collection[key] = value
 
 	emit_signal("value_changed", stored_collection)
 
@@ -96,7 +95,11 @@ func _on_add_button_pressed():
 
 	var new_key = get_default_for_type(last_type_k, true)
 	var new_value = get_default_for_type(last_type_v)
-	stored_collection[new_key] = new_value
+
+	if stored_collection.is_empty():
+		stored_collection = { new_key: new_value }
+	else:
+		stored_collection[new_key] = new_value
 	keys_by_index = stored_collection.keys()
 
 	var new_node = create_item_container(keys_by_index.size() - 1)
