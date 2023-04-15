@@ -8,16 +8,6 @@
 
 config_version=5
 
-_global_script_classes=[{
-"base": "Resource",
-"class": &"AverageDictionaryEnjoyer",
-"language": &"GDScript",
-"path": "res://average_dictionary_enjoyer.gd"
-}]
-_global_script_class_icons={
-"AverageDictionaryEnjoyer": ""
-}
-
 [addons]
 
 resources_spreadsheet_view/Color_Rows=true
