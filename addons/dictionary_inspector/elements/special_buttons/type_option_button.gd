@@ -76,13 +76,18 @@ func _ready():
 	fit_to_longest_item = false
 	set_item_text(0, "DELETE ENTRY")
 	_on_item_selected(selected)
-	connect("item_selected", _on_item_selected)
+	# connect("item_selected", _on_item_selected)
+	get_popup().id_pressed.connect(_on_item_selected)
 
 func add_type_icon_item(typename):
-	add_icon_item(get_theme_icon(typename, "EditorIcons"), typename, typenames[typename])
+	var icon = null
+	if has_theme_icon(typename, "EditorIcons"):
+		icon = get_theme_icon(typename, "EditorIcons")
+
+	add_icon_item(icon, typename, typenames[typename])
 	get_popup().set_item_as_radio_checkable(get_item_count() - 1, false)
 
 
 func _on_item_selected(index):
 	icon = get_item_icon(index)
-	text = ""
+	set_deferred(&"text", "")
