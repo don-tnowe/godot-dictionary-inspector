@@ -23,8 +23,14 @@ func _can_handle(object):
 func _parse_property(object, type, path, hint, hint_text, usage, wide) -> bool:
 	if object != null:
 		if path in object:
-			if !typeof(object[path]) in supported_types:
+			var value = object[path]
+			if !typeof(value) in supported_types:
 				return false
+
+			if value is Array:
+				# Block some Array types, since the built-in editor will be better
+				if hint == PROPERTY_HINT_ENUM || hint_text.left(hint_text.find(":")).split("/").has(str(PROPERTY_HINT_ENUM)):
+					return false
 
 			add_property_editor(path, load("res://addons/dictionary_inspector/inspector_property.gd").new(object[path], plugin))
 			return true
