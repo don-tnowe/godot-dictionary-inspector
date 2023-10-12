@@ -1,4 +1,4 @@
-# Dictionary Inspector.
+# Dictionary Inspector
 
 Exactly what it sounds like. It edits Dictionaries in the Inspector.
 
@@ -19,6 +19,7 @@ Other features:
 - also inspects generic and pool arrays
 - nested dictionaries
 - nested generic and pool arrays
+- drag and drop files onto the "open" button to add multiple resources to array/dictionary (*idk why it was removed in 4.0*)
 - resource editing (*click for nested editor or choose "Edit" for classic full-Inspector view, drop multiple into arrays*)
 
 Proposal to integrate this into the engine: https://github.com/godotengine/godot-proposals/issues/5775
@@ -33,4 +34,4 @@ Made by Don Tnowe in 2022.
 
 [My Twitter](https://twitter.com/don_tnowe)
 
-Copying and Modiication is allowed in accordance to the MIT license, full text is included.
+Copying and Modification is allowed in accordance to the MIT license, full text is included.

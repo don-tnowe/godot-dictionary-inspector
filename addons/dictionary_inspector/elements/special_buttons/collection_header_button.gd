@@ -102,6 +102,39 @@ func _exit_tree():
 		bottom_control.queue_free()
 
 
+func _can_drop_data(at_position : Vector2, data):
+	if !data.has(&"type"): return false
+	if data.type != &"files": return false
+	if stored_collection is Array:
+		if stored_collection.is_typed() && stored_collection.get_typed_builtin() != TYPE_OBJECT:
+			return false
+
+	return true
+
+
+func _drop_data(at_position : Vector2, data):
+	if !data.has(&"type"): return false
+	if data.type != &"files": return false
+	if stored_collection is Array:
+		if stored_collection.is_typed() && stored_collection.get_typed_builtin() != TYPE_OBJECT:
+			return false
+
+		for x in data.files:
+			if load(x) == null: continue
+			stored_collection.append(load(x))
+
+	if stored_collection is Dictionary:
+		for x in data.files:
+			if load(x) == null: continue
+			stored_collection[load(x)] = load(x)
+
+	if bottom_control != null:
+		collection_editor.display(stored_collection, plugin)
+
+	_on_value_changed(stored_collection)
+	return true
+
+
 func _on_pressed():
 	if stored_collection == null: return
 	if bottom_control == null:
