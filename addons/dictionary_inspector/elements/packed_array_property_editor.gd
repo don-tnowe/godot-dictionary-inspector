@@ -62,11 +62,12 @@ func create_item_container(index_in_collection):
 func _on_add_button_pressed():
 	var type = get_array_type(stored_collection)
 	var new_value = get_default_for_type(type)
-	if stored_collection.size() > 0 && (
-		(last_type_v == TYPE_OBJECT || stored_collection[-1] is Object) ||
-		(last_type_v == TYPE_DICTIONARY || stored_collection[-1] is Dictionary)
-	):
-		new_value = stored_collection[-1].duplicate()
+	if stored_collection.size() > 0:
+		if last_type_v == TYPE_OBJECT || stored_collection[-1] is Object:
+			new_value = stored_collection[-1].duplicate()
+
+		if last_type_v == TYPE_DICTIONARY || stored_collection[-1] is Dictionary:
+			new_value = stored_collection[-1].duplicate(true)
 
 	stored_collection.append(new_value)
 	update_variant(stored_collection.size() - 1, new_value, false)
