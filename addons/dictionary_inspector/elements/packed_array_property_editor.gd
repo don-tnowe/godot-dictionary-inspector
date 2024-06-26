@@ -50,13 +50,16 @@ func create_item_container(index_in_collection):
 
 	var type = get_array_type(stored_collection)
 	c.add_child(create_item_control_for_type(type, stored_collection[index_in_collection], c, false))
-
-	var delete_button = Button.new()
-	delete_button.icon = get_theme_icon("Remove", "EditorIcons")
-	delete_button.connect("pressed", _on_item_deleted.bind(c), CONNECT_DEFERRED)
-	c.add_child(delete_button)
+	c.add_child(create_delete_button(c))
 
 	return c
+
+
+func create_delete_button(part_of_container : Control):
+	var delete_button = Button.new()
+	delete_button.icon = get_theme_icon("Remove", "EditorIcons")
+	delete_button.connect("pressed", _on_item_deleted.bind(part_of_container), CONNECT_DEFERRED)
+	return delete_button
 
 
 func _on_add_button_pressed():

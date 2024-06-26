@@ -248,6 +248,7 @@ func create_type_switcher(type, container, is_key) -> TypeOptionButton:
 	else:
 		result = TypeOptionButton.new()
 
+	result.tooltip_text = "Switch type or Delete"
 	result._on_item_selected.call_deferred(type)
 	result.call_deferred("_on_item_selected", result.get_type_dict_index(type))
 	result.get_popup().connect("index_pressed", _on_property_control_type_changed_parse_type.bind(result, container, is_key), CONNECT_DEFERRED)

@@ -25,16 +25,18 @@ func drop_data(position, data):
 		_on_add_button_pressed()
 		update_variant(stored_collection.size() - 1, load(x), false)
 
+
 func create_item_container(index_in_collection):
 	if !stored_collection.is_empty():
 		var c = init_prop_container.duplicate()
 		var index = DictionaryInspectorArrayIndex.new(index_in_collection)
 		index.connect("drop_received", _on_item_moved.bind(c))
 		c.add_child(index)
-		c.add_child(create_type_switcher(typeof(stored_collection[index_in_collection]), c, false))
 		c.add_child(create_item_control_for_type(typeof(stored_collection[index_in_collection]), stored_collection[index_in_collection], c, false))
+		c.add_child(create_type_switcher(typeof(stored_collection[index_in_collection]), c, false))
 
 		return c
+
 
 func update_variant(key, value, is_rename = false):
 	var is_typed = stored_collection.is_typed()
@@ -61,6 +63,7 @@ func update_variant(key, value, is_rename = false):
 			stored_collection[key] = value
 	emit_signal("value_changed", stored_collection)
 
+
 func _on_property_control_type_changed(type, control, container, is_key = false):
 	var key = get_container_index(container)
 	# check type just in case, even if have deactivated all other items in the menu
@@ -77,7 +80,8 @@ func _on_property_control_type_changed(type, control, container, is_key = false)
 	
 	var value = get_default_for_type(type)
 	var new_editor = create_item_control_for_type(type, value, container, is_key)
-	control.get_parent().get_child(control.get_index() + 1).free()
+	control.get_parent().get_child(control.get_index() - 1).free()
 	control.add_sibling(new_editor)
+	container.move_child(new_editor, 1)
 	update_variant(key, value, false)
 	last_type_v = type

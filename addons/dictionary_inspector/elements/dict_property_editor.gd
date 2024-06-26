@@ -40,7 +40,7 @@ func create_item_container(index_in_collection):
 
 	var edit_button = Button.new()
 	edit_button.icon = get_theme_icon("Edit", "EditorIcons")
-	edit_button.tooltip_text = "Toggle Key/Type Editing"
+	edit_button.tooltip_text = "Edit/Change Type/Delete"
 	edit_button.connect("pressed", toggle_property_editable.bind(c))
 	c.add_child(edit_button)
 	c.add_child(create_item_control_for_type(typeof(stored_collection[k]), stored_collection[k], c, false))
@@ -53,22 +53,28 @@ func toggle_property_editable(container):
 	var index = get_container_index(container)
 	var k = keys_by_index[index]
 	if children[1].visible:
+		# Hide key label. It's replaced by an editor
 		children[1].hide()
 
-		container.add_child(create_type_switcher(typeof(k), container, true))
+		# Order: [index, key, edit_button, value] + [type_key, key_editable, type_value, delete]
 		container.add_child(create_item_control_for_type(typeof(k), k, container, true))
+		container.add_child(create_type_switcher(typeof(k), container, true))
 		container.add_child(create_type_switcher(typeof(stored_collection[k]), container, false))
+		container.add_child(create_delete_button(container))
 
-		# Move button and value editor to front
+		# Move button and value editor so it looks like:
+		# [index, key_editable, type_key, <edit_button>, <value>, type_value, delete]
 		container.move_child(children[2], 5)
-		container.move_child(children[3], 6)
+		container.move_child(children[3], 5)
 
 	else:
 		display_key_on_label(k, children[1])
 		children[1].show()
 		children[2].queue_free()
 		children[3].queue_free()
-		children[5].queue_free()
+		children[6].queue_free()
+		children[-1].queue_free()
+
 
 func update_variant(key, value, is_rename = false):
 	if is_rename:
@@ -125,13 +131,13 @@ func _on_property_control_type_changed(type, control, container, is_key = false)
 	container.add_child(new_node)
 	if is_key:
 		last_type_k = type
-		container.get_child(3).free()
-		container.move_child(new_node, 3)
+		container.get_child(2).free()
+		container.move_child(new_node, 2)
 
 	else:
 		last_type_v = type
-		container.get_child(6).free()
-		container.move_child(new_node, 6)
+		container.get_child(5).free()
+		container.move_child(new_node, 5)
 
 
 func _on_item_deleted(control):
