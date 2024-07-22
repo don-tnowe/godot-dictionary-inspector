@@ -238,6 +238,10 @@ func connect_control(control, type, container, is_key):
 	if control.is_connected(signal_name, _on_property_control_value_changed):
 		control.disconnect(signal_name, _on_property_control_value_changed)
 
+	if type == TYPE_INT:
+		control.connect(signal_name, func(x): _on_property_control_value_changed(int(x), control, container, is_key))
+		return
+
 	control.connect(signal_name, _on_property_control_value_changed.bind(control, container, is_key))
 
 
