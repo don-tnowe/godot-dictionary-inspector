@@ -242,15 +242,16 @@ func connect_control(control, type, container, is_key):
 
 
 func create_type_switcher(type, container, is_key) -> TypeOptionButton:
-	var result
+	var result : TypeOptionButton
 	if typeof(stored_collection) == TYPE_ARRAY && stored_collection.is_typed():
 		result = TypeOptionButton.new(stored_collection.get_typed_builtin())
+		result._on_item_selected.call_deferred(0)
+
 	else:
 		result = TypeOptionButton.new()
+		result.call_deferred("_on_item_selected", result.get_type_dict_index(type))
 
-	result.tooltip_text = "Switch type or Delete"
-	result._on_item_selected.call_deferred(type)
-	result.call_deferred("_on_item_selected", result.get_type_dict_index(type))
+	result.tooltip_text = "Switch Type or Delete"
 	result.get_popup().connect("index_pressed", _on_property_control_type_changed_parse_type.bind(result, container, is_key), CONNECT_DEFERRED)
 
 	return result

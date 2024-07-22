@@ -55,18 +55,20 @@ func get_type_dict_index(type):
 
 var _type
 
+
 func _init(type = null):
 	_type = type
 
+
 func _ready():
 	if custom_icons == null || custom_icons.size() == 0:
-		var i = 0
-		for x in typenames:
-			add_type_icon_item(x)
-			if _type:
-				if typenames[x] != _type:
-					set_item_disabled(i, true)
-				i += 1
+		if _type == null:
+			for x in typenames:
+				add_type_icon_item(x)
+
+		else:
+			add_type_icon_item(&"Remove")
+
 		set_item_disabled(0, false)
 
 	else:
@@ -79,12 +81,13 @@ func _ready():
 	# connect("item_selected", _on_item_selected)
 	get_popup().id_pressed.connect(_on_item_selected)
 
-func add_type_icon_item(typename):
-	var icon = null
-	if has_theme_icon(typename, "EditorIcons"):
-		icon = get_theme_icon(typename, "EditorIcons")
 
-	add_icon_item(icon, typename, typenames[typename])
+func add_type_icon_item(typename):
+	var new_icon = null
+	if has_theme_icon(typename, "EditorIcons"):
+		new_icon = get_theme_icon(typename, "EditorIcons")
+
+	add_icon_item(new_icon, typename, typenames[typename])
 	get_popup().set_item_as_radio_checkable(get_item_count() - 1, false)
 
 
