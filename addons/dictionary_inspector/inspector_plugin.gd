@@ -28,6 +28,10 @@ func _parse_property(object, type, path, hint, hint_text, usage, wide) -> bool:
 				return false
 
 			if value is Array:
+				# Typed arrays do not work - editing any value reverts it to default.
+				if value.is_typed():
+					return false
+
 				# Block some Array types, since the built-in editor will be better
 				if hint == PROPERTY_HINT_ENUM || hint_text.left(hint_text.find(":")).split("/").has(str(PROPERTY_HINT_ENUM)):
 					return false
