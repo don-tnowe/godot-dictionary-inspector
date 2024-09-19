@@ -55,13 +55,13 @@ signal value_changed(new_value)
 signal bottom_control_available(control)
 
 var stored_collection
-var plugin
+var plugin : EditorPlugin
 
-var color_rect
-var open_button
-var bottom_control
-var collection_editor
-var stylebox
+var color_rect : ColorRect
+var open_button : Button
+var bottom_control : Control
+var collection_editor : Control
+var stylebox : StyleBox
 
 
 func _init(collection, plugin):
@@ -177,9 +177,14 @@ func get_recursion_style():
 		if cur_parent is EditorInspector:
 			break
 
-	var settings = plugin.get_editor_interface().get_editor_settings()
-	var style = get_theme_stylebox("sub_inspector_bg" + str(((recursion_level + 1) / 3) % 16), "Editor")
-	return style
+	var settings := plugin.get_editor_interface().get_editor_settings()
+	var style_name := "sub_inspector_bg" + str(((recursion_level + 1) / 3) % 16)
+	if has_theme_stylebox(style_name, "Editor"):
+		# Pre 4.3
+		return get_theme_stylebox(style_name, "Editor")
+
+	# 4.3+, moved to different theme class and offset the depth level
+	return get_theme_stylebox("sub_inspector_bg" + str(((recursion_level + 4) / 3) % 16), "EditorStyles")
 
 
 func _on_value_changed(value):
